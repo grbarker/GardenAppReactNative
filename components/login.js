@@ -33,10 +33,6 @@ class Login extends Component {
     async userLogin (e) {
         const { dispatch } = this.props
         const { username, password } = this.state
-        console.log(username, password);
-        console.log(`http://${username}:${password}@34.221.120.52/api/tokens`, {
-          method: 'POST',
-        });
         e.preventDefault();
         try {
           let response = await fetch(

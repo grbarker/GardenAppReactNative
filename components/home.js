@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
-import MapView from 'react-native-maps';
+import TextButton from './TextButton'
+import Moment from 'react-moment';
+import 'moment-timezone';
+import { MapView } from 'expo';
 import { connect } from 'react-redux'
 import { white } from '../utils/colors'
 import { getPosts, getPostsSuccess, getPostsFailure } from '../actions/posts'
@@ -34,7 +37,7 @@ class Home extends Component {
         }
       );
       let responseJSON = await response.json();
-      console.log(responseJSON)
+      //console.log(responseJSON)
       dispatch(getPostsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
@@ -49,12 +52,23 @@ class Home extends Component {
         }
       );
       let responseJSON = await response.json();
-      console.log(responseJSON)
+      //console.log(responseJSON)
       dispatch(getPlantsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
     }
   }
+
+
+  toMap = () => {
+    this.props.navigation.navigate('Map');
+  }
+
+  toProfile = () => {
+    this.props.navigation.navigate('Profile');
+  }
+
+
 
   render() {
     const { post_items, plant_items, fetching, fetched_posts, fetched_plants } = this.props
@@ -64,11 +78,16 @@ class Home extends Component {
           <View style = {styles.container}>
             <Text style = {styles.text}>Home Page!</Text>
           </View>
+          <TextButton style={{margin: 20}} onPress={this.toMap}>
+            Map
+          </TextButton>
+          <TextButton style={{margin: 20}} onPress={this.toProfile}>
+            Profile
+          </TextButton>
           <View>
             {post_items.map((post_item, index) => (
               <View key = {post_item.id} style = {styles.container}>
-                <Text style = {styles.text}>Post:</Text>
-                <Text style = {styles.text}>{post_item.user}</Text>
+                <Text style = {styles.text}>{post_item.user}: </Text>
                 <Text style = {styles.text}>{post_item.body}</Text>
               </View>
             ))}
@@ -76,20 +95,26 @@ class Home extends Component {
           <View>
             {plant_items.map((plant_item, index) => (
               <View key = {plant_item.id} style = {styles.container}>
-                <Text style = {styles.text}>Plant: {plant_item.name}</Text>
-                <Text style = {styles.text}>Grower: {plant_item.grower}</Text>
-                <Text style = {styles.text}>Planted: {plant_item.timestamp}</Text>
+                <Text style = {styles.text}>{plant_item.name}</Text>
+                <Text style = {styles.text}>Grown by {plant_item.grower}</Text>
+                <Text style = {styles.text}>
+                  Planted <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
+                </Text>
               </View>
             ))}
           </View>
-          <MapView
-            initialRegion={{
-              latitude: 45.487292,
-              longitude: -122.635435,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
           />
+          <View>
+            <MapView
+              style={{ flex: 1}}
+              initialRegion={{
+                latitude: 45.487292,
+                longitude: -122.635435,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            />
+          </View>
         </ScrollView>
       )
     } else {

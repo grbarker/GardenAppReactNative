@@ -10,6 +10,8 @@ import { Constants } from 'expo'
 import Login from './components/login'
 import AuthLoadingScreen from './components/authLoadingScreen'
 import Home from './components/home'
+import Map from './components/mapwithmarkers'
+import Profile from './components/profile'
 
 function UdaciStatusBar ({backgroundColor, ...props}) {
   return (
@@ -43,6 +45,24 @@ const AuthNavigator = createStackNavigator({
 const MainNavigator = createStackNavigator({
   Home: {
     screen: Home,
+    navigationOptions: {
+      headerTintColor: white,
+      headerStyle: {
+        backgroundColor: my_green,
+      }
+    }
+  },
+  Map: {
+    screen: Map,
+    navigationOptions: {
+      headerTintColor: white,
+      headerStyle: {
+        backgroundColor: my_green,
+      }
+    }
+  },
+  Profile: {
+    screen: Profile,
     navigationOptions: {
       headerTintColor: white,
       headerStyle: {
