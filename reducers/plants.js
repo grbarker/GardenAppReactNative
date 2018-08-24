@@ -3,6 +3,8 @@ import { FETCH_PLANTS, FETCH_PLANTS_SUCCESS, FETCH_PLANTS_FAILURE } from '../act
 const INITIAL_STATE = {
   fetching: false,
   fetched: false,
+  page: 1,
+  links: {},
   items: [],
   error: null
 }
@@ -19,6 +21,7 @@ export default function plants(state = INITIAL_STATE, action) {
         ...state,
         fetching: false,
         fetched: true,
+        links: action.payload._links,
         items: action.payload.items
       };
     case FETCH_PLANTS_FAILURE:

@@ -9,7 +9,7 @@ import { my_green, white } from './utils/colors'
 import { Constants } from 'expo'
 import Login from './components/login'
 import AuthLoadingScreen from './components/authLoadingScreen'
-import Home from './components/home'
+import Home from './components/home2'
 import Map from './components/mapwithmarkers'
 import Profile from './components/profile'
 
