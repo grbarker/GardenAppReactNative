@@ -1,9 +1,9 @@
-import { FETCH_PLANTS, FETCH_PLANTS_SUCCESS, FETCH_PLANTS_FAILURE } from '../actions/plants'
+import { FETCH_PLANTS, LESS_PLANTS, FETCH_PLANTS_SUCCESS, FETCH_PLANTS_FAILURE } from '../actions/plants'
 
 const INITIAL_STATE = {
   fetching: false,
   fetched: false,
-  page: 1,
+  page: null,
   links: {},
   items: [],
   error: null
@@ -18,18 +18,29 @@ export default function plants(state = INITIAL_STATE, action) {
       };
     case FETCH_PLANTS_SUCCESS:
       return {
-        ...state,
         fetching: false,
         fetched: true,
+        page: action.payload._meta.page,
         links: action.payload._links,
-        items: action.payload.items
+        items: state.items.concat(action.payload.items),
+        error: null
       };
     case FETCH_PLANTS_FAILURE:
       return {
         ...state,
         fetching: false,
         fetched: false,
-        error: action.payload.error
+        error: action.payload
+      };
+    case LESS_PLANTS:
+      return {
+        ...state,
+        links: {
+          next: "/api/plants?per_page=10&page=2",
+          prev: null,
+          self: "/api/plants?per_page=10&page=1",
+        },
+        items: state.items.splice(0, 10)
       };
     default :
       return state

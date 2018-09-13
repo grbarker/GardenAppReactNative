@@ -5,21 +5,20 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import { white } from '../utils/colors'
-import { getPlants, lessPlants, getPlantsSuccess, getPlantsFailure } from '../actions/plants'
+import { getPlants, getPlantsSuccess, getPlantsFailure } from '../actions/plants'
 
 class Plants extends Component {
-
 
   nextPlants = (token, uri) => {
     const { dispatch } = this.props
     console.log("Dispatching getPlants")
     dispatch(getPlants(dispatch, token, uri))
-  }
-
-  lessPlants = () => {
-    const { dispatch } = this.props
-    console.log("Dispatching lessPosts")
-    dispatch(lessPlants())
+      .then((response) => {
+        dispatch(getPlantsSuccess(response.data)) && console.log(response.data)
+      })
+      .catch(error => {
+         dispatch(getMorePlantsFailure(error.response.data)) && console.log(error.response.data.error)
+      })
   }
 
   showState = () => {
@@ -72,9 +71,6 @@ class Plants extends Component {
             </TextButton>
             : null
           }
-          <TextButton style={{margin: 20}} onPress={e => this.lessPosts()}>
-            Less Posts
-          </TextButton>
           <TextButton style={{margin: 20}} onPress={e => this.showState()}>
             Show State
           </TextButton>

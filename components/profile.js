@@ -4,6 +4,7 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import TextButton from './TextButton'
 import { MapView } from 'expo';
+import Followers from './followers'
 import { connect } from 'react-redux'
 import { white } from '../utils/colors'
 import { getUserPosts, getUserPostsSuccess, getUserPostsFailure } from '../actions/userposts'
@@ -135,6 +136,9 @@ class Profile extends Component {
                 <View key = {post_item.id} style = {styles.container}>
                   <Text style = {styles.text}>{post_item.user}: </Text>
                   <Text style = {styles.text}>{post_item.body}</Text>
+                  <Text style = {styles.text}>
+                    Posted by <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
+                  </Text>
                 </View>
               ))}
             </View>

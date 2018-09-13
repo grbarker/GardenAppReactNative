@@ -6,25 +6,25 @@ import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
 import { white } from '../utils/colors'
-import { getPosts, lessPosts, getPostsSuccess, getPostsFailure, getMorePostsSuccess, getMorePostsFailure } from '../actions/posts'
+import { getFollowers, lessFollowers, getFollowersSuccess, getFollowersFailure, getMoreFollowersSuccess, getMoreFollowersFailure } from '../actions/followers'
 
-class Posts extends Component {
+class Followers extends Component {
 
 
-  nextPosts = (token, uri) => {
+  nextFollowers = (token, uri) => {
     const { dispatch } = this.props
-    console.log("Dispatching getPosts")
-    dispatch(getPosts(dispatch, token, uri))
+    console.log("Dispatching getFollowers")
+    dispatch(getFollowers(dispatch, token, uri))
   }
 
-  lessPosts = () => {
+  lessFollowers = () => {
     const { dispatch } = this.props
-    console.log("Dispatching lessPosts")
-    dispatch(lessPosts())
+    console.log("Dispatching lessFollowers")
+    dispatch(lessFollowers())
   }
 
   showState = () => {
-    console.log(this.props.state.posts)
+    console.log(this.props.state.followers)
   }
 
   async componentDidMount() {
@@ -32,7 +32,7 @@ class Posts extends Component {
     console.log(page);
     try {
       let response = await fetch(
-        `http://@34.221.120.52/api/posts`, {
+        `http://@34.221.120.52/api/user/followers`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ class Posts extends Component {
       );
       let responseJSON = await response.json();
       console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
-      dispatch(getPostsSuccess(responseJSON))
+      dispatch(getFollowersSuccess(responseJSON))
     } catch (error) {
       console.error(error);
     }
@@ -49,14 +49,14 @@ class Posts extends Component {
 
 
   render() {
-    const {  links, post_items, fetching, fetched_posts, token, error, state } = this.props
+    const {  links, follower_items, fetching, fetched_followers, token, error, state } = this.props
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
-    //AND THEN FIGURE OUT HOW TO dispatch getPosts
+    //AND THEN FIGURE OUT HOW TO dispatch getFollowers
     console.log("Here's the token!.....", token)
-    console.log("Fetching the next set of posts.")
-    if (fetched_posts == true) {
-      let uri = '/api/posts'
+    console.log("Fetching the next set of followers.")
+    if (fetched_followers == true) {
+      let uri = '/api/followers'
       //console.log("Here are the links!.....", links.next)
       if (links.next) {
         uri = links.next;
@@ -66,21 +66,33 @@ class Posts extends Component {
       return (
         <ScrollView>
           <View>
-            {post_items.map((post_item, index) => (
-              <View key = {post_item.id} style = {styles.container}>
-                <Text style = {styles.text}>{post_item.user}: </Text>
-                <Text style = {styles.text}>{post_item.body}</Text>
+            {follower_items.map((follower_item, index) => (
+              <View key = {index} style = {{flex: 1, flexDirection: 'row'}}>
+                <View style = {styles.avatarcontainer}>
+                  <Image
+                    style={{width: 75, height: 75}}
+                    source={{uri: follower_item._links.avatar}}
+                  />
+                </View>
+                <View style = {styles.userinfocontainer}>
+                  <Text style = {styles.text}>Following: {user.followed_count}</Text>
+                  <Text style = {styles.text}>Followers: {user.follower_count}</Text>
+                  <Text style = {styles.text}>{user.post_count} posts</Text>
+                  <Text style = {styles.text}>
+                    Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
+                  </Text>
+                </View>
               </View>
             ))}
           </View>
           {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextPosts(token, uri)}>
-              More Posts
+            <TextButton style={{margin: 20}} onPress={e => this.nextFollowers(token, uri)}>
+              More Followers
             </TextButton>
             : null
           }
-          <TextButton style={{margin: 20}} onPress={e => this.lessPosts()}>
-            Less Posts
+          <TextButton style={{margin: 20}} onPress={e => this.lessFollowers()}>
+            Less Followers
           </TextButton>
           <TextButton style={{margin: 20}} onPress={e => this.showState()}>
             Show State
@@ -112,18 +124,18 @@ class Posts extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-      fetched_posts: state.posts.fetched,
-      page: state.posts.page,
-      post_items: state.posts.items,
-      links: state.posts.links,
+      fetched_followers: state.followers.fetched,
+      page: state.followers.page,
+      follower_items: state.followers.items,
+      links: state.followers.links,
       token: state.auth.token,
-      error: state.posts.error,
+      error: state.followers.error,
       state: state
     };
 }
 
 
-export default connect(mapStateToProps)(Posts);
+export default connect(mapStateToProps)(Followers);
 
 const styles = StyleSheet.create ({
    container: {
@@ -131,6 +143,12 @@ const styles = StyleSheet.create ({
       marginTop: 3,
       backgroundColor: '#d9f9b1',
       alignItems: 'center',
+   },
+   avatarcontainer: {
+      flex: 2,
+      padding: 0,
+      marginTop: 0,
+      backgroundColor: '#f0f4f0',
    },
    errorContainer: {
       padding: 5,
