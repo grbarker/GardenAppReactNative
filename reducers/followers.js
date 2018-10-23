@@ -1,4 +1,8 @@
-import { FETCH_FOLLOWERS, LESS_FOLLOWERS, FETCH_FOLLOWERS_SUCCESS, FETCH_FOLLOWERS_FAILURE, FETCH_MORE_FOLLOWERS_SUCCESS, FETCH_MORE_FOLLOWERS_FAILURE } from '../actions/followers'
+import {
+  FETCH_FOLLOWERS, FETCH_FOLLOWERS_SUCCESS, FETCH_FOLLOWERS_FAILURE,
+  LESS_FOLLOWERS, SHOW_FOLLOWERS, HIDE_FOLLOWERS,
+  FETCH_MORE_FOLLOWERS_SUCCESS, FETCH_MORE_FOLLOWERS_FAILURE
+} from '../actions/followers'
 
 const INITIAL_STATE = {
   fetching: false,
@@ -24,7 +28,8 @@ export default function followers(state = INITIAL_STATE, action) {
         page: action.payload._meta.page,
         links: action.payload._links,
         items: action.payload.items,
-        error: null
+        error: null,
+        showingFollowers: true
       };
     case FETCH_MORE_FOLLOWERS_SUCCESS:
       return Object.assign({}, state, {
@@ -52,11 +57,21 @@ export default function followers(state = INITIAL_STATE, action) {
       return {
         ...state,
         links: {
-          next: "/api/followers?per_page=10&page=2",
+          next: "/api/user/followers?per_page=10&page=2",
           prev: null,
-          self: "/api/followers?per_page=10&page=1",
+          self: "/api/user/followers?per_page=10&page=1",
         },
         items: state.items.splice(0, 10)
+      };
+    case SHOW_FOLLOWERS:
+      return {
+        ...state,
+        showingFollowers: true
+      };
+    case HIDE_FOLLOWERS:
+      return {
+        ...state,
+        showingFollowers: false
       };
     default :
       return state
