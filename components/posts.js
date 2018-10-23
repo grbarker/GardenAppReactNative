@@ -40,7 +40,7 @@ class Posts extends Component {
         }
       );
       let responseJSON = await response.json();
-      console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
+      //console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
       dispatch(getPostsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
@@ -49,20 +49,21 @@ class Posts extends Component {
 
 
   render() {
-    const {  links, post_items, fetching, fetched_posts, token, error, state } = this.props
+    const {  links, post_items, fetching, fetched_posts, token, error, state, page } = this.props
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
     //AND THEN FIGURE OUT HOW TO dispatch getPosts
-    console.log("Here's the token!.....", token)
-    console.log("Fetching the next set of posts.")
+    //console.log("Here's the token!.....", token)
+    //console.log("Fetching the next set of posts.")
     if (fetched_posts == true) {
+      console.log(page);
       let uri = '/api/posts'
       //console.log("Here are the links!.....", links.next)
       if (links.next) {
         uri = links.next;
       }
       //console.log(state)
-      console.log("Trying to get the uri.....", uri)
+      //console.log("Trying to get the uri.....", uri)
       return (
         <ScrollView>
           <View>
