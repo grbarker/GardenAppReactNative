@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { white, grey, my_blue, purple } from '../utils/colors'
 import { LocationInfo } from './location_info'
 import CalloutView from './marker_callout'
+import { getLocationsSuccess, getUserFailure } from '../actions/locations'
 
 class Map extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -21,7 +22,6 @@ class Map extends Component {
       )
     }
   }
-
   state = {
     isLoading: true,
     locations: [],
@@ -29,16 +29,13 @@ class Map extends Component {
     selectedLocation: {}
   };
 
-
   alertMarkerInfo = (location) => {
    alert(location.address)
   }
 
-
   alertCalloutPress = () => {
    alert("Callout Has Been Pressed!!!")
   }
-
 
   openInfoWindow = (location) => {
     this.setState({
@@ -46,8 +43,6 @@ class Map extends Component {
      selectedLocation: location
    })
   }
-
-
 
   closeInfoWindow = (location) => {
     const { infoWindowOpen } = this.state
@@ -59,18 +54,23 @@ class Map extends Component {
     }
   }
 
+  toLocation = (location) => {
+    this.props.navigation.navigate('Location', {
+      location: location
+    });
+  }
 
   componentDidMount() {
     this.fetchMarkerData();
   }
 
   async fetchMarkerData() {
-    const { token } = this.props
+    const { dispatch, token } = this.props
     const { state } = this.state
     console.log(token);
     try {
       let response = await fetch(
-        `http://@34.221.120.52/api/locations/maps`, {
+        `http://@34.221.120.52/api/locations`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,6 +79,7 @@ class Map extends Component {
       );
       let responseJSON = await response.json();
       console.log("This is the response!!!!!", responseJSON )
+      dispatch(getLocationsSuccess(responseJSON))
       this.setState({
         isLoading: false,
         locations: responseJSON
@@ -90,19 +91,12 @@ class Map extends Component {
 
 
   render() {
-    const { isLoading, locations, infoWindowOpen, selectedLocation } = this.state
+    const { fetched, locations } = this.props
 
     return (
       <View
-        style={{
-          flex: 1,
-          justifyContent: 'flex-end'
-        }}>
-        <MapView
-          style={{
-            flex: 5,
-            justifyContent: 'flex-end'
-          }}
+        style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <MapView style={{ flex: 5, justifyContent: 'flex-end' }}
           initialRegion={{
             latitude: 45.487292,
             longitude: -122.635435,
@@ -111,7 +105,7 @@ class Map extends Component {
           }}
           onPress={e => this.closeInfoWindow()}
         >
-        {isLoading
+        {fetched
           ? null
           : (locations.map((location, index) => {
               console.log(index, location);
@@ -120,15 +114,17 @@ class Map extends Component {
               const metadata = `Status: ${location.statusValue}`;
               console.log('coord: ', coord);
               const gardens = location.gardens.toString();
-              const plants = location.plants.toString();
 
               return (
                 <MapView.Marker
                   key={index}
                   coordinate={coord}
                   title={location.address}
-                  description={gardens +' | ' + plants}
-                  onCalloutPress={e => this.alertCalloutPress()}
+                  description={gardens}
+                  onCalloutPress={() => {
+                    this.props.navigation.navigate('Location', { location })
+                    }
+                  }
                 >
                   <Callout>
                     <CalloutView location={location} />
@@ -138,36 +134,6 @@ class Map extends Component {
             }))
           }
         </MapView>
-
-        {infoWindowOpen
-        ? <View style = {styles.popupcontainer}>
-            <Text style={{fontSize: 16, color: 'grey'}}>{selectedLocation.address}</Text>
-            <Text style={{fontSize: 16, color: 'grey'}}>---------------------------------</Text>
-            <View style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-            }}>
-              <View>
-                <Text style={{fontSize: 18, color: 'grey'}}>{selectedLocation.gardens.length + ' gardens'}</Text>
-                {selectedLocation.gardens.map((garden, index) => {
-                  return (
-                    <Text key={index} style={{fontSize: 16, color: 'grey'}}>{garden}</Text>
-                  )
-                })}
-              </View>
-              <View>
-                <Text style={{fontSize: 18, color: 'grey'}}>{selectedLocation.plants.length + ' plants'}</Text>
-                {selectedLocation.plants.map((plant, index) => {
-                  return (
-                    <Text key={index} style={{fontSize: 16, color: 'grey'}}>{plant}</Text>
-                  )
-                })}
-              </View>
-            </View>
-          </View>
-        : null
-        }
       </View>
     );
   }
@@ -175,7 +141,8 @@ class Map extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-      token: state.auth.token
+      token: state.auth.token,
+      locations: state.locations.items
     };
 }
 
@@ -201,3 +168,40 @@ const styles = StyleSheet.create ({
       color: '#4f603c'
    }
 })
+
+/*An attempt at a pop up window/infowidow. Got it function, but when the marker
+was pressed, the map would jump and changed zoom I believe. Was a very jarring
+experience. Ended up going with the CalloutView component built into the react
+native maps.
+
+{infoWindowOpen
+? <View style = {styles.popupcontainer}>
+    <Text style={{fontSize: 16, color: 'grey'}}>{selectedLocation.address}</Text>
+    <Text style={{fontSize: 16, color: 'grey'}}>---------------------------------</Text>
+    <View style={{
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    }}>
+      <View>
+        <Text style={{fontSize: 18, color: 'grey'}}>{selectedLocation.gardens.length + ' gardens'}</Text>
+        {selectedLocation.gardens.map((garden, index) => {
+          return (
+            <Text key={index} style={{fontSize: 16, color: 'grey'}}>{garden}</Text>
+          )
+        })}
+      </View>
+      <View>
+        <Text style={{fontSize: 18, color: 'grey'}}>{selectedLocation.plants.length + ' plants'}</Text>
+        {selectedLocation.plants.map((plant, index) => {
+          return (
+            <Text key={index} style={{fontSize: 16, color: 'grey'}}>{plant}</Text>
+          )
+        })}
+      </View>
+    </View>
+  </View>
+: null
+}
+
+*/
