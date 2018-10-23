@@ -1,12 +1,17 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
+import {
+  ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image
+} from 'react-native'
 import TextButton from './TextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
 import { white } from '../utils/colors'
-import { getFollowers, lessFollowers, getFollowersSuccess, getFollowersFailure, getMoreFollowersSuccess, getMoreFollowersFailure } from '../actions/followers'
+import {
+  getFollowers, lessFollowers, getFollowersSuccess, getFollowersFailure,
+  getMoreFollowersSuccess, getMoreFollowersFailure
+} from '../actions/followers'
 
 class Followers extends Component {
 
@@ -28,35 +33,39 @@ class Followers extends Component {
   }
 
   async componentDidMount() {
-    const { dispatch, token, page } = this.props
-    console.log(page);
-    try {
-      let response = await fetch(
-        `http://@34.221.120.52/api/user/followers`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      let responseJSON = await response.json();
-      console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
-      dispatch(getFollowersSuccess(responseJSON))
-    } catch (error) {
-      console.error(error);
+    const { dispatch, token, fetched_followers, page } = this.props
+    //console.log(page);
+    if (fetched_followers == false) {
+      try {
+        let response = await fetch(
+          `http://@34.221.120.52/api/user/followers`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        let responseJSON = await response.json();
+        console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
+        dispatch(getFollowersSuccess(responseJSON))
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log('Followers already fetched!')
     }
   }
 
 
   render() {
-    const {  links, follower_items, fetching, fetched_followers, token, error, state } = this.props
+    const {  links, follower_items, fetching, fetched_followers, token, error, state, user } = this.props
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
     //AND THEN FIGURE OUT HOW TO dispatch getFollowers
-    console.log("Here's the token!.....", token)
-    console.log("Fetching the next set of followers.")
+    // console.log("Here's the token!.....", token)
+    // console.log("Fetching the next set of followers.")
     if (fetched_followers == true) {
-      let uri = '/api/followers'
+      let uri = '/api/user/followers'
       //console.log("Here are the links!.....", links.next)
       if (links.next) {
         uri = links.next;
@@ -66,20 +75,24 @@ class Followers extends Component {
       return (
         <ScrollView>
           <View>
+            <View style={styles.container}>
+              <Text style = {styles.text}>{user.follower_count} people are following you.</Text>
+            </View>
             {follower_items.map((follower_item, index) => (
               <View key = {index} style = {{flex: 1, flexDirection: 'row'}}>
-                <View style = {styles.avatarcontainer}>
+                <View style = {styles.listAvatarContainer}>
                   <Image
-                    style={{width: 75, height: 75}}
+                    style={{width: 95, height: 95}}
                     source={{uri: follower_item._links.avatar}}
                   />
                 </View>
-                <View style = {styles.userinfocontainer}>
-                  <Text style = {styles.text}>Following: {user.followed_count}</Text>
-                  <Text style = {styles.text}>Followers: {user.follower_count}</Text>
-                  <Text style = {styles.text}>{user.post_count} posts</Text>
+                <View style = {styles.listUserInfoContainer}>
+                  <Text style = {styles.text}>{follower_item.username}</Text>
+                  <Text style = {styles.text}>Following: {follower_item.followed_count}</Text>
+                  <Text style = {styles.text}>Followers: {follower_item.follower_count}</Text>
+                  <Text style = {styles.text}>{follower_item.post_count} posts</Text>
                   <Text style = {styles.text}>
-                    Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
+                    Last seen <Moment element={Text} fromNow>{follower_item.last_seen}</Moment>
                   </Text>
                 </View>
               </View>
@@ -99,7 +112,7 @@ class Followers extends Component {
           </TextButton>
             <View>
               {Object.values(links).map((link, index) => (
-                <View key = {index} style = {styles.container}>
+                <View key = {index} style = {styles.listContainer}>
                   <Text style = {styles.text}>{link}</Text>
                 </View>
               ))}
@@ -130,7 +143,8 @@ const mapStateToProps = (state, ownProps) => {
       links: state.followers.links,
       token: state.auth.token,
       error: state.followers.error,
-      state: state
+      state: state,
+      user: state.user.user,
     };
 }
 
@@ -138,16 +152,26 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Followers);
 
 const styles = StyleSheet.create ({
-   container: {
+   listContainer: {
       padding: 5,
       marginTop: 3,
       backgroundColor: '#d9f9b1',
       alignItems: 'center',
    },
-   avatarcontainer: {
-      flex: 2,
-      padding: 0,
-      marginTop: 0,
+   listAvatarContainer: {
+      flex: 4,
+      justifyContent: 'space-around',
+      padding: 10,
+      marginTop: 5,
+      marginBottom: 5,
+      backgroundColor: '#f0f4f0',
+   },
+   listUserInfoContainer: {
+      flex: 9,
+      padding: 10,
+      marginTop: 5,
+      marginBottom: 5,
+      marginRight: 5,
       backgroundColor: '#f0f4f0',
    },
    errorContainer: {
