@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { white, grey, my_blue, purple } from '../utils/colors'
 import { LocationInfo } from './location_info'
 import CalloutView from './marker_callout'
-import { getLocationsSuccess, getUserFailure } from '../actions/locations'
+import { getLocationsSuccess, getLocationsFailure } from '../actions/locations'
 
 class Map extends Component {
   static navigationOptions = ({ navigation }) => {
