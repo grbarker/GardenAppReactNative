@@ -57,7 +57,7 @@ class Plants extends Component {
         <ScrollView>
           <View>
             {plant_items.map((plant_item, index) => (
-              <View key = {plant_item.id} style = {styles.container}>
+              <View key = {plant_item.id + 1897877777} style = {styles.container}>
                 <Text style = {styles.text}>{plant_item.name}</Text>
                 <Text style = {styles.text}>Grown by {plant_item.grower}</Text>
                 <Text style = {styles.text}>
