@@ -107,16 +107,6 @@ class Followed extends Component {
           <TextButton style={{margin: 20}} onPress={e => this.lessFollowed()}>
             Less Followed
           </TextButton>
-          <TextButton style={{margin: 20}} onPress={e => this.showState()}>
-            Show State
-          </TextButton>
-            <View>
-              {Object.values(links).map((link, index) => (
-                <View key = {index} style = {styles.listContainer}>
-                  <Text style = {styles.text}>{link}</Text>
-                </View>
-              ))}
-            </View>
         </ScrollView>
       )
     } else if (error) {
