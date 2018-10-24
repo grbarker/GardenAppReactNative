@@ -12,6 +12,7 @@ import AuthLoadingScreen from './components/authLoadingScreen'
 import Home from './components/home2'
 import Map from './components/mapwithmarkers'
 import Profile from './components/profile'
+import Location from './components/location'
 
 function UdaciStatusBar ({backgroundColor, ...props}) {
   return (
@@ -63,6 +64,15 @@ const MainNavigator = createStackNavigator({
   },
   Profile: {
     screen: Profile,
+    navigationOptions: {
+      headerTintColor: white,
+      headerStyle: {
+        backgroundColor: my_green,
+      }
+    }
+  },
+  Location: {
+    screen: Location,
     navigationOptions: {
       headerTintColor: white,
       headerStyle: {
