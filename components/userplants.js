@@ -5,7 +5,7 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
-import { white } from '../utils/colors'
+import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
 import {
   getUserPlants, lessUserPlants, getUserPlantsSuccess, getUserPlantsFailure,
   getMoreUserPlantsSuccess, getMoreUserPlantsFailure
@@ -125,7 +125,7 @@ const styles = StyleSheet.create ({
    container: {
       padding: 5,
       marginTop: 3,
-      backgroundColor: '#d9f9b1',
+      backgroundColor: '#f0f4f0',
       alignItems: 'center',
    },
    errorContainer: {
@@ -137,6 +137,6 @@ const styles = StyleSheet.create ({
    },
    text: {
      fontSize: 20,
-      color: '#4f603c'
+      color: black
    }
 })

@@ -5,7 +5,7 @@ import 'moment-timezone';
 import TextButton from './TextButton'
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
-import { white } from '../utils/colors'
+import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
 import { getUserPosts, getUserPostsSuccess, getUserPostsFailure } from '../actions/userposts'
 import { getUserPlants, getUserPlantsSuccess, getUserPlantsFailure } from '../actions/userplants'
 import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
@@ -118,67 +118,66 @@ class Profile extends Component {
       //console.log('Followers', followers, length)
       let imgSrc = user._links['avatar'];
       return (
-        <ScrollView>
-          <View>
-            <MapView
-              style={{ flex: 5}}
-              initialRegion={{
-                latitude: 45.487292,
-                longitude: -122.635435,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-            />
-          </View>
-          <View style = {styles.postplantscontainer}>
-            <View style = {{flex: 1, flexDirection: 'row'}}>
-              <View style = {styles.avatarcontainer}>
-                <Image
-                  style={{width: 150, height: 150}}
-                  source={{uri: imgSrc}}
-                />
+        <View>
+          <MapView
+            initialRegion={{
+              latitude: 45.487292,
+              longitude: -122.635435,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+          <ScrollView>
+            <View style = {styles.postplantscontainer}>
+              <View style = {styles.profileTitleContainer}>
+                <Text style = {styles.profileText}>{user.username}s Profile Page!</Text>
               </View>
-              <View style = {styles.userinfocontainer}>
-                <Text style = {styles.text}>
-                  <TextButton onPress={this.toggleFollowed}>
-                    Following: {user.followed_count}
-                  </TextButton>
-                </Text>
-                <Text style = {styles.text}>
-                  <TextButton onPress={this.toggleFollowers}>
-                    Followers: {user.follower_count}
-                  </TextButton>
-                </Text>
-                <Text style = {styles.text}>{user.post_count} posts</Text>
-                <Text style = {styles.text}>
-                  Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
-                </Text>
+              <View style = {styles.userProfileContainer}>
+                <View style = {styles.avatarContainer}>
+                  <Image
+                    style={{width: 110, height: 110}}
+                    source={{uri: imgSrc}}
+                  />
+                </View>
+                <View style = {styles.profileInfoContainer}>
+                  <Text style = {styles.text}>
+                    <TextButton onPress={this.toggleFollowed}>
+                      Following: {user.followed_count}
+                    </TextButton>
+                  </Text>
+                  <Text style = {styles.text}>
+                    <TextButton onPress={this.toggleFollowers}>
+                      Followers: {user.follower_count}
+                    </TextButton>
+                  </Text>
+                  <Text style = {styles.text}>{user.post_count} posts</Text>
+                  <Text style = {styles.text}>
+                    Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
+                  </Text>
+                </View>
+              </View>
+              <TextButton style={styles.profileText} onPress={this.toMap}>
+                Map
+              </TextButton>
+              {showingFollowed == true
+                ? <View style = {styles.followerscontainer}>
+                    <Followed />
+                  </View>
+                : console.log('FOLLOWED ARE NOT BEING SHOWN.')
+              }
+              {showingFollowers == true
+                ? <View style = {styles.followerscontainer}>
+                    <Followers />
+                  </View>
+                : console.log('FOLLOWERS ARE NOT BEING SHOWN.')
+              }
+              <View>
+                <UserPosts />
+                <UserPlants />
               </View>
             </View>
-            <View style = {styles.container}>
-              <Text style = {styles.text}>{user.username}s Profile Page!</Text>
-            </View>
-            <TextButton style={{margin: 20}} onPress={this.toMap}>
-              Map
-            </TextButton>
-            {showingFollowed == true
-              ? <View style = {styles.followerscontainer}>
-                  <Followed />
-                </View>
-              : console.log('FOLLOWED ARE NOT BEING SHOWN.')
-            }
-            {showingFollowers == true
-              ? <View style = {styles.followerscontainer}>
-                  <Followers />
-                </View>
-              : console.log('FOLLOWERS ARE NOT BEING SHOWN.')
-            }
-            <View>
-              <UserPosts />
-              <UserPlants />
-            </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       )
     } else {
       return (
@@ -216,7 +215,14 @@ const styles = StyleSheet.create ({
       backgroundColor: '#d9f9b1',
       alignItems: 'center',
    },
-   postplantscontainer: {
+   gardenPlantListContainer: {
+      flex: 8,
+      flexDirection: 'row',
+      padding: 0,
+      marginTop: 0,
+      backgroundColor: '#f0f4f0',
+   },
+   postPlantsContainer: {
       flex: 2,
       padding: 2,
       marginTop: 1,
@@ -230,24 +236,40 @@ const styles = StyleSheet.create ({
       backgroundColor: '#f0f4f0',
       justifyContent: 'space-evenly',
    },
-   userinfocontainer: {
-      flex: 2,
+   profileTitleContainer: {
+      padding: 0,
+      marginTop: 0,
+      alignItems: 'center',
+   },
+   userProfileContainer: {
+      flex: 1,
+      flexDirection: 'row',
       padding: 0,
       marginTop: 0,
       backgroundColor: '#f0f4f0',
    },
-   avatarcontainer: {
-      flex: 2,
+   profileInfoContainer: {
+      flex: 28,
       padding: 0,
       marginTop: 0,
-      backgroundColor: '#f0f4f0',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+   },
+   avatarContainer: {
+      flex: 12,
+      padding: 0,
+      marginTop: 0,
    },
    followerscontainer: {
       padding: 8,
       marginTop: 5,
    },
    text: {
-     fontSize: 12,
+     fontSize: 16,
       color: '#4f603c'
+   },
+   profileText: {
+     fontSize: 24,
+      color: my_green
    }
 })
