@@ -4,12 +4,18 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import TextButton from './TextButton'
 import { MapView } from 'expo';
-import Followers from './followers'
 import { connect } from 'react-redux'
 import { white } from '../utils/colors'
 import { getUserPosts, getUserPostsSuccess, getUserPostsFailure } from '../actions/userposts'
 import { getUserPlants, getUserPlantsSuccess, getUserPlantsFailure } from '../actions/userplants'
 import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
+import { showFollowers, hideFollowers } from '../actions/followers'
+import { showFollowed, hideFollowed } from '../actions/followed'
+import Followers from './followers'
+import Followed from './followed'
+import UserPosts from './userposts'
+import UserPlants from './userplants'
+
 
 class Profile extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -28,8 +34,8 @@ class Profile extends Component {
 
   async componentDidMount() {
     const { dispatch, token } = this.props
-    console.log(token);
-    try {
+    console.log('PROFILE   ', token);
+    /*try {
       let response = await fetch(
         `http://@34.221.120.52/api/user/posts`, {
           method: 'GET',
@@ -58,7 +64,7 @@ class Profile extends Component {
       dispatch(getUserPlantsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
-    }
+    }*/
     try {
       let response = await fetch(
         `http://@34.221.120.52/api/user`, {
@@ -80,21 +86,37 @@ class Profile extends Component {
   toMap = () => {
     this.props.navigation.navigate('Map');
   }
-
-
   toHome = () => {
     this.props.navigation.navigate('Home');
   }
 
+  toggleFollowers = (e) => {
+    const { dispatch, showingFollowers } = this.props
+    showingFollowers
+    ? dispatch(hideFollowers())
+    : dispatch(showFollowers())
+    e.preventDefault();
+  }
+
+  toggleFollowed = (e) => {
+    const { dispatch, showingFollowed } = this.props
+    showingFollowed
+    ? dispatch(hideFollowed())
+    : dispatch(showFollowed())
+    e.preventDefault();
+  }
 
 
   render() {
-    const { user, post_items, plant_items, fetching, fetched_posts, fetched_plants, fetched_user } = this.props
+    const { user, fetching, fetched_user, showingFollowers, showingFollowed, followers, length } = this.props
 
-    if (fetched_posts == true && (fetched_plants == true && fetched_user == true)) {
-      console.log(user)
-      console.log(user._links['avatar'])
-      let imgsrc = user._links['avatar'];
+    if (fetched_user == true) {
+      //console.log('User', user)
+      //console.log('Avatar', user._links['avatar'])
+      // console.log("Showing Followers?", showingFollowers)
+      // console.log("Showing Followed?", showingFollowed)
+      //console.log('Followers', followers, length)
+      let imgSrc = user._links['avatar'];
       return (
         <ScrollView>
           <View>
@@ -113,12 +135,20 @@ class Profile extends Component {
               <View style = {styles.avatarcontainer}>
                 <Image
                   style={{width: 150, height: 150}}
-                  source={{uri: imgsrc}}
+                  source={{uri: imgSrc}}
                 />
               </View>
               <View style = {styles.userinfocontainer}>
-                <Text style = {styles.text}>Following: {user.followed_count}</Text>
-                <Text style = {styles.text}>Followers: {user.follower_count}</Text>
+                <Text style = {styles.text}>
+                  <TextButton onPress={this.toggleFollowed}>
+                    Following: {user.followed_count}
+                  </TextButton>
+                </Text>
+                <Text style = {styles.text}>
+                  <TextButton onPress={this.toggleFollowers}>
+                    Followers: {user.follower_count}
+                  </TextButton>
+                </Text>
                 <Text style = {styles.text}>{user.post_count} posts</Text>
                 <Text style = {styles.text}>
                   Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
@@ -131,27 +161,21 @@ class Profile extends Component {
             <TextButton style={{margin: 20}} onPress={this.toMap}>
               Map
             </TextButton>
-            <View>
-              {post_items.map((post_item, index) => (
-                <View key = {post_item.id} style = {styles.container}>
-                  <Text style = {styles.text}>{post_item.user}: </Text>
-                  <Text style = {styles.text}>{post_item.body}</Text>
-                  <Text style = {styles.text}>
-                    Posted by <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
-                  </Text>
+            {showingFollowed == true
+              ? <View style = {styles.followerscontainer}>
+                  <Followed />
                 </View>
-              ))}
-            </View>
-            <View>
-              {plant_items.map((plant_item, index) => (
-                <View key = {plant_item.id} style = {styles.container}>
-                  <Text style = {styles.text}>{plant_item.name}</Text>
-                  <Text style = {styles.text}>Grow by {plant_item.grower}</Text>
-                  <Text style = {styles.text}>
-                    Planted by <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
-                  </Text>
+              : console.log('FOLLOWED ARE NOT BEING SHOWN.')
+            }
+            {showingFollowers == true
+              ? <View style = {styles.followerscontainer}>
+                  <Followers />
                 </View>
-              ))}
+              : console.log('FOLLOWERS ARE NOT BEING SHOWN.')
+            }
+            <View>
+              <UserPosts />
+              <UserPlants />
             </View>
           </View>
         </ScrollView>
@@ -174,7 +198,11 @@ const mapStateToProps = (state, ownProps) => {
       user: state.user.user,
       post_items: state.userposts.items,
       plant_items: state.userplants.items,
-      token: state.auth.token
+      token: state.auth.token,
+      showingFollowers: state.followers.showingFollowers,
+      showingFollowed: state.followed.showingFollowed,
+      followers: state.followers,
+      length: state.followers.items.length,
     };
 }
 
@@ -213,6 +241,10 @@ const styles = StyleSheet.create ({
       padding: 0,
       marginTop: 0,
       backgroundColor: '#f0f4f0',
+   },
+   followerscontainer: {
+      padding: 8,
+      marginTop: 5,
    },
    text: {
      fontSize: 12,
