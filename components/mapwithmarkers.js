@@ -6,7 +6,8 @@ import { connect } from 'react-redux'
 import { white, grey, my_blue, purple } from '../utils/colors'
 import { LocationInfo } from './location_info'
 import CalloutView from './marker_callout'
-import { getLocationsSuccess, getLocationsFailure } from '../actions/locations'
+import { getLocationsSuccess, getLocationsFailure, getOwnLocation, getOwnLocationDenied } from '../actions/locations'
+import { Constants, Location, Permissions } from 'expo';
 
 class Map extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -24,9 +25,8 @@ class Map extends Component {
   }
   state = {
     isLoading: true,
-    locations: [],
-    infoWindowOpen: false,
-    selectedLocation: {}
+    ownLocation: null,
+    errorMessage: null,
   };
 
   alertMarkerInfo = (location) => {
@@ -60,14 +60,51 @@ class Map extends Component {
     });
   }
 
+  _getLocationAsync = async () => {
+    const { dispatch, ownLocation, globalState } = this.props
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      dispatch(getOwnLocationDenied())
+    }
+    let ownLocationObj = await Location.getCurrentPositionAsync({});
+    dispatch(getOwnLocation(ownLocationObj))
+    this.setState({ ownLocation: ownLocationObj });
+    console.log(
+      `This is suppposed to log the state to show that the phone location
+      has been obtained properly and the state updated right`, globalState.locations)
+  };
+
+  _getLocation = () => {
+    const { dispatch, ownLocation } = this.props
+    let { status } = Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      dispatch(getOwnLocationDenied())
+    }
+    if (ownLocation) {
+      console.log('The current location of the phone is already in the store')
+    } else {
+      let ownLocationObj = Location.getCurrentPositionAsync({});
+      dispatch(getOwnLocation(ownLocationObj))
+    }
+  };
+
+  alterPhoneLocation = (ownLocation) => {
+    const { coords } = this.state.ownLocation
+    var newLat = coords.latitude + 1
+    var newLng = coords.longitude + 1
+  }
+
   componentDidMount() {
     this.fetchMarkerData();
+    this._getLocationAsync();
   }
 
   async fetchMarkerData() {
     const { dispatch, token } = this.props
-    const { state } = this.state
-    console.log(token);
+    const { ownLocation } = this.state
+    //console.log(token);
+    //console.log('ownLocation', ownLocation);
+    //console.log('state', this.state);
     try {
       let response = await fetch(
         `http://@34.221.120.52/api/locations`, {
@@ -78,12 +115,8 @@ class Map extends Component {
         }
       );
       let responseJSON = await response.json();
-      console.log("This is the response!!!!!", responseJSON )
+      //console.log("This is the response!!!!!", responseJSON )
       dispatch(getLocationsSuccess(responseJSON))
-      this.setState({
-        isLoading: false,
-        locations: responseJSON
-      });
     } catch (error) {
       console.error(error);
     }
@@ -91,49 +124,59 @@ class Map extends Component {
 
 
   render() {
-    const { fetched, locations } = this.props
+    const { fetched, locations, globalState } = this.props
+    const { ownLocation } = this.state
+    console.log('Own Location In Render Function', ownLocation)
+    {(ownLocation !== null)
+      ? console.log('Coords', ownLocation.coords)
+      : null
+    }
+    //console.log(ownLocation.coords.longitude)
 
     return (
-      <View
-        style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <MapView style={{ flex: 5, justifyContent: 'flex-end' }}
-          initialRegion={{
-            latitude: 45.487292,
-            longitude: -122.635435,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          onPress={e => this.closeInfoWindow()}
-        >
-        {fetched
-          ? null
-          : (locations.map((location, index) => {
-              console.log(index, location);
-              console.log(index, ": INDEX");
-              const coord = { latitude: location.latitude, longitude: location.longitude };
-              const metadata = `Status: ${location.statusValue}`;
-              console.log('coord: ', coord);
-              const gardens = location.gardens.toString();
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      {ownLocation
+        ? <MapView style={{ flex: 5, justifyContent: 'flex-end' }}
+              initialRegion={{
+                latitude: ownLocation.coords.latitude,
+                longitude: ownLocation.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              onPress={e => this.closeInfoWindow()}
+            >
+            {fetched
+              ? null
+              : (locations.map((location, index) => {
+                  //console.log(index, location);
+                  //console.log(index, ": INDEX");
+                  const coord = { latitude: location.latitude, longitude: location.longitude };
+                  const metadata = `Status: ${location.statusValue}`;
+                  //console.log('coord: ', coord);
+                  const gardens = location.gardens.toString();
 
-              return (
-                <MapView.Marker
-                  key={index}
-                  coordinate={coord}
-                  title={location.address}
-                  description={gardens}
-                  onCalloutPress={() => {
-                    this.props.navigation.navigate('Location', { location })
-                    }
-                  }
-                >
-                  <Callout>
-                    <CalloutView location={location} />
-                  </Callout>
-                </MapView.Marker>
-              );
-            }))
-          }
+                  return (
+                    <MapView.Marker
+                      key={index}
+                      coordinate={coord}
+                      title={location.address}
+                      description={gardens}
+                      onCalloutPress={() => {
+                        this.props.navigation.navigate('Location', { location })
+                        }
+                      }
+                    >
+                      <Callout>
+                        <CalloutView location={location} />
+                      </Callout>
+                    </MapView.Marker>
+                  );
+                }))
+              }
         </MapView>
+        : null
+      }
+
       </View>
     );
   }
@@ -142,7 +185,9 @@ class Map extends Component {
 const mapStateToProps = (state, ownProps) => {
     return {
       token: state.auth.token,
-      locations: state.locations.items
+      locations: state.locations.items,
+      storeOwnLocation: state.locations.ownLocation,
+      globalState: state,
     };
 }
 
