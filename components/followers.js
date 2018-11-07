@@ -2,12 +2,15 @@ import React, { Component } from 'react'
 import {
   ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image
 } from 'react-native'
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
-import { white } from '../utils/colors'
+import {
+  white, my_green, green, gray4, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink
+} from '../utils/colors'
 import {
   getFollowers, lessFollowers, getFollowersSuccess, getFollowersFailure,
   getMoreFollowersSuccess, getMoreFollowersFailure
@@ -73,10 +76,10 @@ class Followers extends Component {
       //console.log(state)
       console.log("Trying to get the uri.....", uri)
       return (
-        <ScrollView>
+        <ScrollView style={styles.scrollViewAsContainer}>
           <View>
-            <View style={styles.container}>
-              <Text style = {styles.text}>{user.follower_count} people are following you.</Text>
+            <View style={styles.scrollViewHeaderContainer}>
+              <Text style = {styles.scrollViewHeaderText}>{user.follower_count} people are following you.</Text>
             </View>
             {follower_items.map((follower_item, index) => (
               <View key = {index} style = {{flex: 1, flexDirection: 'row'}}>
@@ -98,15 +101,40 @@ class Followers extends Component {
               </View>
             ))}
           </View>
-          {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextFollowers(token, uri)}>
-              More Followers
-            </TextButton>
-            : null
-          }
-          <TextButton style={{margin: 20}} onPress={e => this.lessFollowers()}>
-            Less Followers
-          </TextButton>
+          <View style={styles.moreLessButtonsContainer}>
+            {(links.prev) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.lessFollowera()}>
+                Less Followers
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}>
+                  Less Followers
+                </AlteredTextButton>
+            }
+            {(links.next) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.nextFollowers(token, uri)}
+              >
+                More Followers
+                </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}
+                >
+                  More Followers
+                </AlteredTextButton>
+            }
+          </View>
         </ScrollView>
       )
     } else if (error) {
@@ -142,37 +170,76 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Followers);
 
 const styles = StyleSheet.create ({
-   listContainer: {
-      padding: 5,
-      marginTop: 3,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   listAvatarContainer: {
-      flex: 4,
-      justifyContent: 'space-around',
-      padding: 10,
-      marginTop: 5,
-      marginBottom: 5,
-      backgroundColor: '#f0f4f0',
-   },
-   listUserInfoContainer: {
-      flex: 9,
-      padding: 10,
-      marginTop: 5,
-      marginBottom: 5,
-      marginRight: 5,
-      backgroundColor: '#f0f4f0',
-   },
-   errorContainer: {
-      padding: 5,
-      marginTop: 3,
-      marginBottom: 30,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   text: {
-     fontSize: 20,
-      color: '#4f603c'
-   }
+  scrollViewAsContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: my_green,
+    marginTop: 3,
+  },
+  scrollViewHeaderContainer: {
+    backgroundColor: my_green,
+  },
+  listContainer: {
+    padding: 5,
+    marginTop: 3,
+    backgroundColor: '#d9f9b1',
+    alignItems: 'center',
+  },
+  listAvatarContainer: {
+    flex: 4,
+    justifyContent: 'space-around',
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: '#f0f4f0',
+  },
+  listUserInfoContainer: {
+    flex: 9,
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    marginRight: 5,
+    backgroundColor: '#f0f4f0',
+  },
+  errorContainer: {
+    padding: 5,
+    marginTop: 3,
+    marginBottom: 30,
+    backgroundColor: '#d9f9b1',
+    alignItems: 'center',
+  },
+  filledTextButton: {
+   padding: 5,
+   backgroundColor: my_green,
+   borderColor: my_green,
+   borderWidth: 2,
+   borderRadius: 5
+  },
+  inactiveFilledTextButton: {
+   padding: 5,
+   backgroundColor: gray4,
+   borderColor: gray4,
+   borderWidth: 2,
+   borderRadius: 5
+  },
+  scrollViewHeaderText: {
+   fontSize: 20,
+   color: '#f0f4f0',
+  },
+  text: {
+   fontSize: 20,
+   color: black
+  },
+  whiteText: {
+   fontSize: 16,
+   color: white
+  },
+  myGreenText: {
+   fontSize: 16,
+   color: my_green
+  },
+  gray4Text: {
+   fontSize: 16,
+   color: gray4
+  }
 })
