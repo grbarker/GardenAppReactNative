@@ -3,13 +3,17 @@ The data schema for the state(e.g. INITIAL_STATE) will change in the future
 when the database schema is changed so it can serve the locations
 itself which will increase speed. The schema should end up like the commented
  out section at the bottom of the file */
-import { FETCH_LOCATIONS, FETCH_LOCATIONS_SUCCESS, FETCH_LOCATIONS_FAILURE } from '../actions/locations'
+import {
+  FETCH_LOCATIONS, FETCH_LOCATIONS_SUCCESS, FETCH_LOCATIONS_FAILURE,
+  FETCH_OWN_LOCATION, FETCH_OWN_LOCATION_DENIED
+} from '../actions/locations'
 
 const INITIAL_STATE = {
   fetching: false,
   fetched: false,
   items: [],
-  error: null
+  error: null,
+  ownLocation: null
 }
 export default function locations(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -32,6 +36,16 @@ export default function locations(state = INITIAL_STATE, action) {
         fetching: false,
         fetched: false,
         error: action.payload
+      };
+    case FETCH_OWN_LOCATION:
+      return {
+        ...state,
+        ownLocation: action.payload
+      };
+    case FETCH_OWN_LOCATION_DENIED:
+      return {
+        ...state,
+        ownLocation: null
       };
     default :
       return state
