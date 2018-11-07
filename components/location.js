@@ -3,6 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image } f
 import Moment from 'react-moment';
 import 'moment-timezone';
 import TextButton from './TextButton'
+import StreetView from 'react-native-streetview';
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
 import { white, blue, my_blue, my_green } from '../utils/colors'
@@ -39,18 +40,15 @@ class Location extends Component {
     length = location.plants.length
     if (length % 2 == 0) {
       half = length / 2
-      scndstart = half + 1
     } else {
       half = (length + 1) / 2
-      scndstart = half + 1
     }
     list1 = location.plants.slice(0, half)
-    list2 = location.plants.slice(scndstart, length)
+    list2 = location.plants.slice(half, length)
     this.setState({
       plantsList1: list1,
       plantsList2: list2,
     })
-    console.log(this.state)
   }
 
   toMap = () => {
@@ -99,7 +97,16 @@ class Location extends Component {
     return (
       <ScrollView>
         <View style = {styles.imageContainer}>
-          <Text style = {{fontSize: 18, color: 'blue'}}> This is where the image of the location will go</Text>
+          <Image
+            source={{
+              uri: `http://maps.googleapis.com/maps/api/streetview?size=200x200&location=${location.address}&pitch=-25&key=AIzaSyDhPSBWrhJwAnF7awFAIq2fzba7AWM8AuQ`,
+              method: 'GET',
+              headers: {
+                'Authorization': 'Bearer qzikpYaoWdBQuKTRf3rKypWyi14HfoPp',
+              },
+            }}
+            style={{width: 400, height: 400}}
+          />
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.locationAddressContainer}>
@@ -198,7 +205,7 @@ const styles = StyleSheet.create ({
    },
    imageContainer: {
       height: 215,
-      backgroundColor: '#7c53c3',
+      backgroundColor: '#f0f4f0',
    },
    contentContainer: {
       flex: 1,
