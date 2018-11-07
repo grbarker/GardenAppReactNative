@@ -4,7 +4,7 @@ import { purple } from '../utils/colors'
 
  export default function TextButton ({ children, onPress, style = {} }) {
    return (
-     <TouchableOpacity onPress={onPress}>
+     <TouchableOpacity style={style} onPress={onPress}>
        <Text style={[styles.home, style]}>{children}</Text>
      </TouchableOpacity>
    )
@@ -14,6 +14,5 @@ import { purple } from '../utils/colors'
 const styles = StyleSheet.create({
   home: {
     textAlign: 'center',
-    color: purple,
   }
 })
