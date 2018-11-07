@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ScrollView, Text, TextInput, View, Button } from 'react-native';
+import { AsyncStorage } from "react-native";
 import TextButton from './TextButton';
 import { login } from '../actions/auth';
 
@@ -50,6 +51,33 @@ class Login extends Component {
         }
     }
 
+    async userSignup (e) {
+        const { dispatch } = this.props
+        const { username, password } = this.state
+        e.preventDefault();
+        try {
+          let response = await fetch(
+            `http://34.221.120.52/api/users`, {
+              method: 'POST',
+              body: {
+                "username": `${username}`,
+                "email": `${email}`,
+                "password": `${password}`,
+              }
+            }
+          );
+          let responseJSON = await response.json();
+          console.log(responseJSON);
+          let token = responseJSON.token;
+          dispatch(signup(username, email, password));
+          this.toHome()
+        } catch (error) {
+          console.error(error);
+        }
+    }
+
+
+
     toggleRoute (e) {
         let alt = (this.state.route === 'Login') ? 'SignUp' : 'Login';
         this.setState({ route: alt });
@@ -79,7 +107,10 @@ class Login extends Component {
                     value={this.state.password}
                     onChangeText={(text) => this.setState({ password: text })} />
                 <View style={{margin: 7}}/>
-                <Button onPress={(e) => this.userLogin(e)} title={this.state.route}/>
+                {(this.state.route === 'Login')
+                  ? <Button onPress={(e) => this.userLogin(e)} title={this.state.route}/>
+                  : <Button onPress={(e) => this.userSignup(e)} title={this.state.route}/>
+                }
                 <Text style={{fontSize: 16, color: 'blue'}} onPress={(e) => this.toggleRoute(e)}>{alt}</Text>
                 <TextButton style={{margin: 20}} onPress={this.toPublicHome}>
                   Skip Login
