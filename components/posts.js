@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
-import { white } from '../utils/colors'
+import {
+  white, my_green, green, gray, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink, gray4
+} from '../utils/colors'
 import { getPosts, lessPosts, getPostsSuccess, getPostsFailure, getMorePostsSuccess, getMorePostsFailure } from '../actions/posts'
 
 class Posts extends Component {
@@ -51,7 +54,7 @@ class Posts extends Component {
   render() {
     const {  links, post_items, fetching, fetched_posts, token, error, state, page } = this.props
     //TRYING TO SET UP A 'NEXT' Button
-    //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
+    //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE AlteredTextButton
     //AND THEN FIGURE OUT HOW TO dispatch getPosts
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of posts.")
@@ -65,34 +68,54 @@ class Posts extends Component {
       //console.log(state)
       //console.log("Trying to get the uri.....", uri)
       return (
-        <ScrollView>
+        <ScrollView style={styles.scrollViewAsContainer}>
+          <View style = {styles.scrollViewHeaderContainer}>
+            <Text style = {styles.scrollViewHeaderText}>Recent Posts</Text>
+          </View>
           <View>
             {post_items.map((post_item, index) => (
               <View key = {post_item.id} style = {styles.container}>
-                <Text style = {styles.text}>{post_item.user}: </Text>
+                <Text style = {styles.myGreenText}>{post_item.user}: </Text>
                 <Text style = {styles.text}>{post_item.body}</Text>
               </View>
             ))}
           </View>
-          {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextPosts(token, uri)}>
-              More Posts
-            </TextButton>
-            : null
-          }
-          <TextButton style={{margin: 20}} onPress={e => this.lessPosts()}>
-            Less Posts
-          </TextButton>
-          <TextButton style={{margin: 20}} onPress={e => this.showState()}>
-            Show State
-          </TextButton>
-            <View>
-              {Object.values(links).map((link, index) => (
-                <View key = {index} style = {styles.container}>
-                  <Text style = {styles.text}>{link}</Text>
-                </View>
-              ))}
-            </View>
+          <View style={styles.moreLessButtonsContainer}>
+            {(links.prev) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.lessPosts()}
+              >
+                Less Posts
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}
+                >
+                  Less Posts
+                </AlteredTextButton>
+            }
+            {(links.next) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.nextPosts(token, uri)}
+              >
+                More Posts
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}
+                >
+                  More Posts
+                </AlteredTextButton>
+            }
+          </View>
         </ScrollView>
       )
     } else if (error) {
@@ -127,21 +150,70 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Posts);
 
 const styles = StyleSheet.create ({
-   container: {
-      padding: 5,
-      marginTop: 3,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   errorContainer: {
-      padding: 5,
-      marginTop: 3,
-      marginBottom: 30,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   text: {
-     fontSize: 20,
-      color: '#4f603c'
-   }
+  scrollViewAsContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: my_green,
+    marginTop: 3,
+  },
+  scrollViewHeaderContainer: {
+    backgroundColor: my_green,
+  },
+  container: {
+    padding: 5,
+    marginTop: 3,
+    backgroundColor: '#f0f4f0',
+  },
+  moreLessButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    padding: 5,
+    margin: 3,
+    backgroundColor: '#f0f4f0',
+    borderTopWidth: 2,
+    borderTopColor: my_green,
+  },
+  errorContainer: {
+    padding: 5,
+    marginTop: 3,
+    marginBottom: 30,
+    backgroundColor: '#d9f9b1',
+    alignItems: 'center',
+  },
+  filledTextButton: {
+    padding: 5,
+    backgroundColor: my_green,
+    borderColor: my_green,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  inactiveFilledTextButton: {
+    padding: 5,
+    backgroundColor: gray4,
+    borderColor: gray4,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  scrollViewHeaderText: {
+    fontSize: 20,
+    color: '#f0f4f0',
+  },
+  text: {
+    fontSize: 14,
+    color: black
+  },
+  whiteText: {
+    fontSize: 16,
+    color: white
+  },
+  myGreenText: {
+    fontSize: 16,
+    color: my_green
+  },
+  gray4Text: {
+    fontSize: 16,
+    color: gray4
+  }
 })
