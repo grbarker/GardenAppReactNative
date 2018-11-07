@@ -70,8 +70,7 @@ class Map extends Component {
     dispatch(getOwnLocation(ownLocationObj))
     this.setState({ ownLocation: ownLocationObj });
     console.log(
-      `This is suppposed to log the state to show that the phone location
-      has been obtained properly and the state updated right`, globalState.locations)
+      `Suppposed to show the phone location has passed to the store right`, globalState.locations)
   };
 
   _getLocation = () => {
@@ -126,7 +125,7 @@ class Map extends Component {
   render() {
     const { fetched, locations, globalState } = this.props
     const { ownLocation } = this.state
-    console.log('Own Location In Render Function', ownLocation)
+    //console.log('Own Location In Render Function', ownLocation)
     {(ownLocation !== null)
       ? console.log('Coords', ownLocation.coords)
       : null

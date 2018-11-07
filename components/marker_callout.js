@@ -23,7 +23,7 @@ class CalloutView extends Component {
           method: 'GET',
         }
       );
-      console.log("This is the response to the IMAGE request!!!!!", response)
+      //console.log("This is the response to the IMAGE request!!!!!", response)
     } catch (error) {
       console.error(error);
     }
