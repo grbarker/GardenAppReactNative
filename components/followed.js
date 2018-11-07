@@ -2,12 +2,15 @@ import React, { Component } from 'react'
 import {
   ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image
 } from 'react-native'
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
-import { white } from '../utils/colors'
+import {
+  white, my_green, green, gray4, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink
+} from '../utils/colors'
 import {
   getFollowed, lessFollowed, getFollowedSuccess, getFollowedFailure,
   getMoreFollowedSuccess, getMoreFollowedFailure
@@ -73,10 +76,10 @@ class Followed extends Component {
       //console.log(state)
       console.log("Trying to get the uri.....", uri)
       return (
-        <ScrollView>
+        <ScrollView style={styles.scrollViewAsContainer}>
           <View>
-            <View style={styles.container}>
-              <Text style = {styles.text}>You are following {user.followed_count} people</Text>
+            <View style={styles.scrollViewHeaderContainer}>
+              <Text style = {styles.scrollViewHeaderText}>You are following {user.followed_count} people</Text>
             </View>
             {followed_items.map((followed_item, index) => (
               <View key = {index} style = {{flex: 1, flexDirection: 'row'}}>
@@ -98,15 +101,40 @@ class Followed extends Component {
               </View>
             ))}
           </View>
-          {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextFollowed(token, uri)}>
-              More Followed
-            </TextButton>
-            : null
-          }
-          <TextButton style={{margin: 20}} onPress={e => this.lessFollowed()}>
-            Less Followed
-          </TextButton>
+          <View style={styles.moreLessButtonsContainer}>
+            {(links.prev) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.lessFollowed()}>
+                Less Followed
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}>
+                  Less Followed
+                </AlteredTextButton>
+            }
+            {(links.next) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.nextFollowed(token, uri)}
+              >
+                More Followed
+                </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}
+                >
+                  More Followed
+                </AlteredTextButton>
+            }
+          </View>
         </ScrollView>
       )
     } else if (error) {
@@ -142,6 +170,26 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Followed);
 
 const styles = StyleSheet.create ({
+  scrollViewAsContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: my_green,
+    marginTop: 3,
+  },
+  scrollViewHeaderContainer: {
+    backgroundColor: my_green,
+  },
+  moreLessButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 5,
+    margin: 3,
+    backgroundColor: my_green,
+    borderTopWidth: 2,
+    borderTopColor: my_green,
+  },
    listContainer: {
       padding: 5,
       marginTop: 3,
@@ -170,8 +218,38 @@ const styles = StyleSheet.create ({
       backgroundColor: '#d9f9b1',
       alignItems: 'center',
    },
+   filledTextButton: {
+     padding: 5,
+     backgroundColor: my_green,
+     borderColor: my_green,
+     borderWidth: 2,
+     borderRadius: 5
+   },
+   inactiveFilledTextButton: {
+     padding: 5,
+     backgroundColor: gray4,
+     borderColor: gray4,
+     borderWidth: 2,
+     borderRadius: 5
+   },
+   scrollViewHeaderText: {
+     fontSize: 20,
+     color: '#f0f4f0',
+   },
    text: {
      fontSize: 20,
-      color: '#4f603c'
+     color: black
+   },
+   whiteText: {
+     fontSize: 16,
+     color: white
+   },
+   myGreenText: {
+     fontSize: 16,
+     color: my_green
+   },
+   gray4Text: {
+     fontSize: 16,
+     color: gray4
    }
 })
