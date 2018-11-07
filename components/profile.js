@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
 import Moment from 'react-moment';
 import 'moment-timezone';
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
 import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
@@ -94,7 +94,7 @@ class Profile extends Component {
     const { dispatch, showingFollowers } = this.props
     showingFollowers
     ? dispatch(hideFollowers())
-    : dispatch(showFollowers())
+    : dispatch(showFollowers()) && dispatch(hideFollowed())
     e.preventDefault();
   }
 
@@ -102,7 +102,7 @@ class Profile extends Component {
     const { dispatch, showingFollowed } = this.props
     showingFollowed
     ? dispatch(hideFollowed())
-    : dispatch(showFollowed())
+    : dispatch(showFollowed()) && dispatch(hideFollowers())
     e.preventDefault();
   }
 
@@ -141,14 +141,14 @@ class Profile extends Component {
                 </View>
                 <View style = {styles.profileInfoContainer}>
                   <Text style = {styles.text}>
-                    <TextButton onPress={this.toggleFollowed}>
+                    <AlteredTextButton onPress={this.toggleFollowed}>
                       Following: {user.followed_count}
-                    </TextButton>
+                    </AlteredTextButton>
                   </Text>
                   <Text style = {styles.text}>
-                    <TextButton onPress={this.toggleFollowers}>
+                    <AlteredTextButton onPress={this.toggleFollowers}>
                       Followers: {user.follower_count}
-                    </TextButton>
+                    </AlteredTextButton>
                   </Text>
                   <Text style = {styles.text}>{user.post_count} posts</Text>
                   <Text style = {styles.text}>
@@ -156,9 +156,9 @@ class Profile extends Component {
                   </Text>
                 </View>
               </View>
-              <TextButton style={styles.profileText} onPress={this.toMap}>
+              <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toMap}>
                 Map
-              </TextButton>
+              </AlteredTextButton>
               {showingFollowed == true
                 ? <View style = {styles.followerscontainer}>
                     <Followed />
@@ -209,67 +209,73 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Profile);
 
 const styles = StyleSheet.create ({
-   container: {
-      padding: 5,
-      marginTop: 3,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   gardenPlantListContainer: {
-      flex: 8,
-      flexDirection: 'row',
-      padding: 0,
-      marginTop: 0,
-      backgroundColor: '#f0f4f0',
-   },
-   postPlantsContainer: {
-      flex: 2,
-      padding: 2,
-      marginTop: 1,
-      backgroundColor: '#d9f9b1',
-      justifyContent: 'space-evenly',
-   },
-   userpanecontainer: {
-      flex: 2,
-      padding: 0,
-      marginTop: 0,
-      backgroundColor: '#f0f4f0',
-      justifyContent: 'space-evenly',
-   },
-   profileTitleContainer: {
-      padding: 0,
-      marginTop: 0,
-      alignItems: 'center',
-   },
-   userProfileContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      padding: 0,
-      marginTop: 0,
-      backgroundColor: '#f0f4f0',
-   },
-   profileInfoContainer: {
-      flex: 28,
-      padding: 0,
-      marginTop: 0,
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-   },
-   avatarContainer: {
-      flex: 12,
-      padding: 0,
-      marginTop: 0,
-   },
-   followerscontainer: {
-      padding: 8,
-      marginTop: 5,
-   },
-   text: {
-     fontSize: 16,
-      color: '#4f603c'
-   },
-   profileText: {
-     fontSize: 24,
-      color: my_green
-   }
+  container: {
+    padding: 5,
+    marginTop: 3,
+    backgroundColor: '#d9f9b1',
+    alignItems: 'center',
+  },
+  gardenPlantListContainer: {
+    flex: 8,
+    flexDirection: 'row',
+    padding: 0,
+    marginTop: 0,
+    backgroundColor: '#f0f4f0',
+  },
+  postPlantsContainer: {
+    flex: 2,
+    padding: 2,
+    marginTop: 1,
+    backgroundColor: '#d9f9b1',
+    justifyContent: 'space-evenly',
+  },
+  userpanecontainer: {
+    flex: 2,
+    padding: 0,
+    marginTop: 0,
+    backgroundColor: '#f0f4f0',
+    justifyContent: 'space-evenly',
+  },
+  profileTitleContainer: {
+    padding: 0,
+    marginTop: 0,
+    alignItems: 'center',
+  },
+  userProfileContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 0,
+    marginTop: 0,
+    backgroundColor: '#f0f4f0',
+  },
+  profileInfoContainer: {
+    flex: 28,
+    padding: 0,
+    marginTop: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  avatarContainer: {
+    flex: 12,
+    padding: 0,
+    marginTop: 0,
+  },
+  followerscontainer: {
+    padding: 8,
+    marginTop: 5,
+  },
+  myGreenTextButton: {
+    padding: 5,
+    borderColor: my_green,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  text: {
+   fontSize: 16,
+    color: '#4f603c'
+  },
+  profileText: {
+    fontSize: 24,
+    color: my_green
+  }
 })
