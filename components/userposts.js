@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import axios from 'axios';
-import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
+import {
+  white, my_green, green, gray4, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink
+} from '../utils/colors'
 import {
   getUserPosts, lessUserPosts, getUserPostsSuccess, getUserPostsFailure,
   getMoreUserPostsSuccess, getMoreUserPostsFailure
@@ -24,6 +27,10 @@ class UserPosts extends Component {
     const { dispatch } = this.props
     console.log("Dispatching lessUserPosts")
     dispatch(lessUserPosts())
+  }
+
+  inactiveButton = () => {
+    var inactiveButtonPressed = true
   }
 
   showState = () => {
@@ -54,7 +61,7 @@ class UserPosts extends Component {
   render() {
     const {  links, userpost_items, fetching, fetched_userposts, token, error, state, page } = this.props
     //TRYING TO SET UP A 'NEXT' Button
-    //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
+    //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE AlteredTextButton
     //AND THEN FIGURE OUT HOW TO dispatch getUsers
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of userposts.")
@@ -68,24 +75,52 @@ class UserPosts extends Component {
       //console.log(state)
       //console.log("Trying to get the uri.....", uri)
       return (
-        <ScrollView>
+        <ScrollView style={styles.scrollViewAsContainer}>
+          <View style = {styles.scrollViewHeaderContainer}>
+            <Text style = {styles.scrollViewHeaderText}>Here are you're most recent posts</Text>
+          </View>
           <View>
             {userpost_items.map((userpost_item, index) => (
               <View key = {userpost_item.id} style = {styles.container}>
-                <Text style = {styles.text}>{userpost_item.user}: </Text>
+                <Text style = {styles.myGreenText}>{userpost_item.user}: </Text>
                 <Text style = {styles.text}>{userpost_item.body}</Text>
               </View>
             ))}
           </View>
-          {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextUserPosts(token, uri)}>
-              More Posts
-            </TextButton>
-            : null
-          }
-          <TextButton style={{margin: 20}} onPress={e => this.lessUserPosts()}>
-            Less Posts
-          </TextButton>
+          <View style={styles.moreLessButtonsContainer}>
+            {(links.prev) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.lessUserPosts()}>
+                Less Posts
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}>
+                  Less Posts
+                </AlteredTextButton>
+            }
+            {(links.next) ?
+              <AlteredTextButton
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.nextUserPosts(token, uri)}
+              >
+                More Posts
+                </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
+                  onPress={this.inactiveButton}
+                >
+                  More Posts
+                </AlteredTextButton>
+            }
+          </View>
         </ScrollView>
       )
     } else if (error) {
@@ -120,11 +155,31 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(UserPosts);
 
 const styles = StyleSheet.create ({
+  scrollViewAsContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: my_green,
+    marginTop: 3,
+  },
    container: {
       padding: 5,
       marginTop: 3,
       backgroundColor: '#f0f4f0',
       alignItems: 'center',
+   },
+   scrollViewHeaderContainer: {
+     backgroundColor: my_green,
+   },
+   moreLessButtonsContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      padding: 5,
+      margin: 3,
+      backgroundColor: '#f0f4f0',
+      borderTopWidth: 2,
+      borderTopColor: my_green,
    },
    errorContainer: {
       padding: 5,
@@ -133,8 +188,48 @@ const styles = StyleSheet.create ({
       backgroundColor: '#d9f9b1',
       alignItems: 'center',
    },
+   textButton: {
+     padding: 5,
+     color: white,
+     backgroundColor: my_green,
+     borderColor: white,
+     borderWidth: 2,
+     borderRadius: 5
+   },
+   inactiveTextButton: {
+     padding: 5,
+     borderColor: gray4,
+     borderWidth: 2,
+     borderRadius: 5
+   },
+   filledTextButton: {
+     padding: 5,
+     backgroundColor: my_green,
+     borderColor: my_green,
+     borderWidth: 2,
+     borderRadius: 5
+   },
+   inactiveFilledTextButton: {
+     padding: 5,
+     backgroundColor: gray4,
+     borderColor: gray4,
+     borderWidth: 2,
+     borderRadius: 5
+   },
    text: {
      fontSize: 20,
-      color: black
+     color: black
+   },
+   whiteText: {
+     fontSize: 16,
+     color: white
+   },
+   myGreenText: {
+     fontSize: 16,
+     color: my_green
+   },
+   gray4Text: {
+     fontSize: 16,
+     color: gray4
    }
 })
