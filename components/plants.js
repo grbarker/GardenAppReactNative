@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
-import TextButton from './TextButton'
+import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
-import { white } from '../utils/colors'
+import {
+  white, my_green, green, gray, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink, gray4
+} from '../utils/colors'
 import { getPlants, lessPlants, getPlantsSuccess, getPlantsFailure } from '../actions/plants'
 
 class Plants extends Component {
@@ -47,18 +50,21 @@ class Plants extends Component {
 
 
   render() {
-    const { links, plant_items, fetching, fetched_plants, token, error, state } = this.props
+    const { links, plant_items, fetching, fetched_plants, token, error, state, page } = this.props
     if (fetched_plants == true) {
       let uri = '/api/plants'
       if (links.next) {
         uri = links.next;
       }
       return (
-        <ScrollView>
+        <ScrollView style = {styles.scrollViewAsContainer}>
+          <View style = {styles.scrollViewHeaderContainer}>
+            <Text style = {styles.scrollViewHeaderText}>Recent Plants</Text>
+          </View>
           <View>
             {plant_items.map((plant_item, index) => (
               <View key = {plant_item.id + 1897877777} style = {styles.container}>
-                <Text style = {styles.text}>{plant_item.name}</Text>
+                <Text style = {styles.myGreenText}>{plant_item.name}</Text>
                 <Text style = {styles.text}>Grown by {plant_item.grower}</Text>
                 <Text style = {styles.text}>
                   Planted <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
@@ -66,25 +72,39 @@ class Plants extends Component {
               </View>
             ))}
           </View>
-          {(links.next) ?
-            <TextButton style={{margin: 20}} onPress={e => this.nextPlants(token, uri)}>
-              More Plants
-            </TextButton>
-            : null
-          }
-          <TextButton style={{margin: 20}} onPress={e => this.lessPosts()}>
-            Less Posts
-          </TextButton>
-          <TextButton style={{margin: 20}} onPress={e => this.showState()}>
-            Show State
-          </TextButton>
-            <View>
-              {Object.values(links).map((link, index) => (
-                <View key = {index} style = {styles.container}>
-                  <Text style = {styles.text}>{link}</Text>
-                </View>
-              ))}
-            </View>
+          <View style={styles.moreLessButtonsContainer}>
+            {(links.prev) ?
+              <AlteredTextButton
+                style={styles.textButton}
+                textStyle={styles.myGreenText}
+                onPress={e => this.lessPlants()}
+              >
+                Less Plants
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveTextButton}
+                  textStyle={styles.gray4Text}
+                  onPress={this.inactiveButton}>
+                  Less Plants
+                </AlteredTextButton>
+            }
+            {(links.next) ?
+              <AlteredTextButton
+                style={styles.textButton}
+                textStyle={styles.whiteText}
+                onPress={e => this.nextPlants(token, uri)}>
+                More Plants
+              </AlteredTextButton>
+              :
+                <AlteredTextButton
+                  style={styles.inactiveTextButton}
+                  textStyle={styles.gray4Text}
+                  onPress={this.inactiveButton}>
+                  More Plants
+                </AlteredTextButton>
+            }
+          </View>
         </ScrollView>
       )
     } else if (error) {
@@ -119,21 +139,64 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Plants);
 
 const styles = StyleSheet.create ({
-   container: {
-      padding: 5,
-      marginTop: 3,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   errorContainer: {
-      padding: 5,
-      marginTop: 3,
-      marginBottom: 30,
-      backgroundColor: '#d9f9b1',
-      alignItems: 'center',
-   },
-   text: {
-     fontSize: 20,
-      color: '#4f603c'
-   }
+  scrollViewAsContainer: {
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: my_green,
+    marginTop: 3,
+  },
+  container: {
+    padding: 5,
+    marginTop: 3,
+    backgroundColor: '#f0f4f0',
+  },
+  scrollViewHeaderContainer: {
+    backgroundColor: my_green,
+  },
+  moreLessButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 5,
+    margin: 3,
+    backgroundColor: my_green,
+    borderTopWidth: 2,
+    borderTopColor: my_green,
+  },
+  errorContainer: {
+    padding: 5,
+    marginTop: 3,
+    marginBottom: 30,
+    backgroundColor: '#d9f9b1',
+    alignItems: 'center',
+  },
+  textButton: {
+    padding: 5,
+    borderColor: white,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  inactiveTextButton: {
+    padding: 5,
+    borderColor: gray4,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  scrollViewHeaderText: {
+    fontSize: 20,
+    color: '#f0f4f0',
+  },
+  text: {
+    fontSize: 16,
+    color: black
+  },
+  myGreenText: {
+    fontSize: 16,
+    color: my_green
+  },
+  gray4Text: {
+    fontSize: 16,
+    color: gray4
+  }
 })
