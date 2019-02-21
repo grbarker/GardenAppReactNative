@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ScrollView, Text, TextInput, View, Button } from 'react-native';
+import { ScrollView, Text, TextInput, View, Button, StyleSheet } from 'react-native';
 import { AsyncStorage } from "react-native";
 import TextButton from './TextButton';
 import { login } from '../actions/auth';
+import {
+  white, my_green, green, gray4, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink
+} from '../utils/colors'
 
 const api = "http://54.245.49.118/catalog/mobilelogin/JSON"
 
@@ -88,9 +92,9 @@ class Login extends Component {
         let alt = (this.state.route === 'Login') ? 'SignUp' : 'Login';
         return (
             <ScrollView style={{padding: 20}}>
-                <Text style={{fontSize: 27}}>{this.state.route}</Text>
+                <Text style={{fontSize: 27, color: my_green}}>{this.state.route}</Text>
                 <TextInput
-                    style={{fontSize: 37}}
+                    style={styles.loginInputField}
                     placeholder='Username'
                     autoCapitalize='none'
                     autoCorrect={false}
@@ -99,7 +103,7 @@ class Login extends Component {
                     value={this.state.username}
                     onChangeText={(text) => this.setState({ username: text })} />
                 <TextInput
-                    style={{fontSize: 37}}
+                    style={styles.loginInputField}
                     placeholder='Password'
                     autoCapitalize='none'
                     autoCorrect={false}
@@ -129,3 +133,49 @@ const mapStateToProps = (state, ownProps) => {
 
 
 export default connect(mapStateToProps)(Login);
+
+
+const styles = StyleSheet.create ({
+  filledTextButton: {
+   padding: 5,
+   backgroundColor: my_green,
+   borderColor: my_green,
+   borderWidth: 2,
+   borderRadius: 5
+  },
+  inactiveFilledTextButton: {
+   padding: 5,
+   backgroundColor: gray4,
+   borderColor: gray4,
+   borderWidth: 2,
+   borderRadius: 5
+  },
+  loginInputField: {
+    marginTop: 5,
+    fontSize: 37,
+    paddingTop: 8,
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingBottom: 1,
+    backgroundColor: '#ffffff',
+    borderColor: my_green,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  text: {
+   fontSize: 20,
+   color: black
+  },
+  whiteText: {
+   fontSize: 16,
+   color: white
+  },
+  myGreenText: {
+   fontSize: 16,
+   color: my_green
+  },
+  gray4Text: {
+   fontSize: 16,
+   color: gray4
+  }
+})

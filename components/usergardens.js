@@ -4,38 +4,36 @@ import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
-import axios from 'axios';
 import {
   white, my_green, green, gray, red, purple, orange, blue, my_blue,
   lightPurp, black, pink, gray4
 } from '../utils/colors'
-import { getPosts, lessPosts, getPostsSuccess, getPostsFailure, getMorePostsSuccess, getMorePostsFailure } from '../actions/posts'
+import { getUserGardens, lessUserGardens, getUserGardensSuccess, getUserGardensFailure } from '../actions/usergardens'
 
-class Posts extends Component {
+class UserGardens extends Component {
 
 
-  nextPosts = (token, uri) => {
+  nextUserGardens = (token, uri) => {
     const { dispatch } = this.props
-    console.log("Dispatching getPosts")
-    dispatch(getPosts(dispatch, token, uri))
+    console.log("Dispatching getNextUserGardens")
+    dispatch(getUserGardens(dispatch, token, uri))
   }
 
-  lessPosts = () => {
+  lessUserGardens = () => {
     const { dispatch } = this.props
-    console.log("Dispatching lessPosts")
-    dispatch(lessPosts())
+    console.log("Dispatching lessUserGardens")
+    dispatch(lessUserGardens())
   }
 
   showState = () => {
-    console.log(this.props.state.posts)
+    console.log(this.props.state.gardens)
   }
 
   async componentDidMount() {
-    const { dispatch, token, page } = this.props
-    console.log(page);
+    const { dispatch, token } = this.props
     try {
       let response = await fetch(
-        `http://34.221.120.52/api/posts`, {
+        `http://34.221.120.52/api/user/gardens`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,8 +41,8 @@ class Posts extends Component {
         }
       );
       let responseJSON = await response.json();
-      //console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
-      dispatch(getPostsSuccess(responseJSON))
+      //console.log(responseJSON)
+      dispatch(getUserGardensSuccess(responseJSON))
     } catch (error) {
       console.error(error);
     }
@@ -52,31 +50,25 @@ class Posts extends Component {
 
 
   render() {
-    const {  links, post_items, fetching, fetched_posts, token, error, state, page } = this.props
-    //TRYING TO SET UP A 'NEXT' Button
-    //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE AlteredTextButton
-    //AND THEN FIGURE OUT HOW TO dispatch getPosts
-    //console.log("Here's the token!.....", token)
-    //console.log("Fetching the next set of posts.")
-    if (fetched_posts == true) {
-      console.log(page);
-      let uri = '/api/posts'
-      //console.log("Here are the links!.....", links.next)
+    const { links, garden_items, fetching, fetched_gardens, token, error, state, page } = this.props
+    if (fetched_gardens == true) {
+      let uri = '/api/gardens'
       if (links.next) {
         uri = links.next;
       }
-      //console.log(state)
-      //console.log("Trying to get the uri.....", uri)
       return (
-        <ScrollView style={styles.scrollViewAsContainer}>
+        <ScrollView style = {styles.scrollViewAsContainer}>
           <View style = {styles.scrollViewHeaderContainer}>
-            <Text style = {styles.scrollViewHeaderText}>Recent Posts</Text>
+            <Text style = {styles.scrollViewHeaderText}>Your Gardens</Text>
           </View>
           <View>
-            {post_items.map((post_item, index) => (
-              <View key = {post_item.id} style = {styles.container}>
-                <Text style = {styles.myGreenText}>{post_item.user}: </Text>
-                <Text style = {styles.text}>{post_item.body}</Text>
+            {garden_items.map((garden_item, index) => (
+              <View key = {garden_item.id + 1897877577} style = {styles.container}>
+                <Text style = {styles.myGreenText}>{garden_item.name}</Text>
+                <Text style = {styles.text}>Gardener: {garden_item.grower}</Text>
+                <Text style = {styles.text}>
+                  Started: <Moment element={Text} fromNow>{garden_item.timestamp}</Moment>
+                </Text>
               </View>
             ))}
           </View>
@@ -85,34 +77,31 @@ class Posts extends Component {
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
-                onPress={e => this.lessPosts()}
+                onPress={e => this.lessUserGardens()}
               >
-                Less Posts
+                Less Gardens
               </AlteredTextButton>
               :
                 <AlteredTextButton
                   style={styles.inactiveFilledTextButton}
                   textStyle={styles.whiteText}
-                  onPress={this.inactiveButton}
-                >
-                  Less Posts
+                  onPress={this.inactiveButton}>
+                  Less Gardens
                 </AlteredTextButton>
             }
             {(links.next) ?
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
-                onPress={e => this.nextPosts(token, uri)}
-              >
-                More Posts
+                onPress={e => this.nextUserGardens(token, uri)}>
+                More Gardens
               </AlteredTextButton>
               :
                 <AlteredTextButton
-                  style={styles.inactiveFilledTextButton}
+                  style={styles.inactiveTextButton}
                   textStyle={styles.whiteText}
-                  onPress={this.inactiveButton}
-                >
-                  More Posts
+                  onPress={this.inactiveButton}>
+                  More Gardens
                 </AlteredTextButton>
             }
           </View>
@@ -136,19 +125,18 @@ class Posts extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-      fetched_posts: state.posts.fetched,
-      postSuccessfull: state.posts.postSuccessfull,
+      fetched_gardens: state.usergardens.fetched,
       page: state.posts.page,
-      post_items: state.posts.items,
-      links: state.posts.links,
+      links: state.usergardens.links,
+      garden_items: state.usergardens.items,
       token: state.auth.token,
-      error: state.posts.error,
+      error: state.usergardens.error,
       state: state
     };
 }
 
 
-export default connect(mapStateToProps)(Posts);
+export default connect(mapStateToProps)(UserGardens);
 
 const styles = StyleSheet.create ({
   scrollViewAsContainer: {
@@ -159,21 +147,21 @@ const styles = StyleSheet.create ({
     borderColor: my_green,
     marginTop: 3,
   },
-  scrollViewHeaderContainer: {
-    backgroundColor: my_green,
-  },
   container: {
     padding: 5,
     marginTop: 3,
     backgroundColor: '#f0f4f0',
   },
+  scrollViewHeaderContainer: {
+    backgroundColor: my_green,
+  },
   moreLessButtonsContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 5,
-    margin: 3,
+    margin: 2,
     backgroundColor: '#f0f4f0',
     borderTopWidth: 2,
     borderTopColor: my_green,
@@ -184,6 +172,18 @@ const styles = StyleSheet.create ({
     marginBottom: 30,
     backgroundColor: '#d9f9b1',
     alignItems: 'center',
+  },
+  textButton: {
+    padding: 5,
+    borderColor: white,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  inactiveTextButton: {
+    padding: 5,
+    borderColor: gray4,
+    borderWidth: 2,
+    borderRadius: 5
   },
   filledTextButton: {
     padding: 5,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create ({
     color: '#f0f4f0',
   },
   text: {
-    fontSize: 14,
+    fontSize: 16,
     color: black
   },
   whiteText: {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
+import { Picker, PickerIOS, ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
+import ModalSelector from 'react-native-modal-selector'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import AlteredTextButton from './AlteredTextButton'
@@ -7,14 +8,18 @@ import { MapView } from 'expo';
 import { connect } from 'react-redux'
 import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
 import { getUserPosts, getUserPostsSuccess, getUserPostsFailure } from '../actions/userposts'
-import { getUserPlants, getUserPlantsSuccess, getUserPlantsFailure } from '../actions/userplants'
+import { getUserPlants, getUserPlantsSuccess, getUserPlantsFailure, hidePlantInput, showPlantInput } from '../actions/userplants'
+import { updatePicker } from '../actions/usergardens'
 import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
 import { showFollowers, hideFollowers } from '../actions/followers'
 import { showFollowed, hideFollowed } from '../actions/followed'
+import PostInput from './postInput'
 import Followers from './followers'
 import Followed from './followed'
 import UserPosts from './userposts'
 import UserPlants from './userplants'
+import UserGardens from './usergardens'
+import PlantInput from './plantInput'
 
 
 class Profile extends Component {
@@ -31,43 +36,37 @@ class Profile extends Component {
       )
     }
   }
+  state = {
+    selectedGarden: {},
+    gardenName: '',
+    gardenID: 0
 
-  async componentDidMount() {
+  }
+
+  async fetchCurrentUser(){
     const { dispatch, token } = this.props
-    console.log('PROFILE   ', token);
-    /*try {
-      let response = await fetch(
-        `http://@34.221.120.52/api/user/posts`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      let responseJSON = await response.json();
-      //console.log(responseJSON)
-      dispatch(getUserPostsSuccess(responseJSON))
-    } catch (error) {
-      console.error(error);
-    }
-    try {
-      let response = await fetch(
-        `http://@34.221.120.52/api/user/plants`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      let responseJSON = await response.json();
-      //console.log(responseJSON)
-      dispatch(getUserPlantsSuccess(responseJSON))
-    } catch (error) {
-      console.error(error);
-    }*/
     try {
       let response = await fetch(
         `http://@34.221.120.52/api/user`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      let responseJSON = await response.json();
+      console.log(responseJSON)
+      dispatch(getUserSuccess(responseJSON))
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async fetchUser(user){
+    const { dispatch, token } = this.props
+    try {
+      let response = await fetch(
+        `http://@34.221.120.52/api/users/${user.id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,12 +81,32 @@ class Profile extends Component {
     }
   }
 
+  componentDidMount() {
+    const { dispatch, token, gardenChoice } = this.props
+    const { user } = this.props.navigation.state.params
+    console.log('PROFILE   ', token);
+    (user) ? (this.fetchUser(user) && console.log(user)) : (this.fetchCurrentUser() && console.log('No User'))
+    this.setState({
+      selectedGarden: gardenChoice,
+      gardenName: gardenChoice.name,
+      gardenID: gardenChoice.id
+    })
+  }
+
 
   toMap = () => {
     this.props.navigation.navigate('Map');
   }
   toHome = () => {
     this.props.navigation.navigate('Home');
+  }
+
+  togglePlantInput = (e) => {
+    const { dispatch, showingPlantInput } = this.props
+    showingPlantInput
+    ? dispatch(hidePlantInput())
+    : dispatch(showPlantInput())
+    e.preventDefault();
   }
 
   toggleFollowers = (e) => {
@@ -106,9 +125,12 @@ class Profile extends Component {
     e.preventDefault();
   }
 
-
   render() {
-    const { user, fetching, fetched_user, showingFollowers, showingFollowed, followers, length } = this.props
+    const { dispatch, user, fetching, fetched_user, showingFollowers,
+      showingFollowed, showingPlantInput, followers, length,
+      fetched_usergardens, usergarden_items, gardenChoice
+    } = this.props
+    const { selectedGarden, gardenName, gardenID } = this.state
 
     if (fetched_user == true) {
       //console.log('User', user)
@@ -130,7 +152,7 @@ class Profile extends Component {
           <ScrollView>
             <View style = {styles.postplantscontainer}>
               <View style = {styles.profileTitleContainer}>
-                <Text style = {styles.profileText}>{user.username}s Profile Page!</Text>
+                <Text style = {styles.profileText}>{user.username}'s Profile Page!</Text>
               </View>
               <View style = {styles.userProfileContainer}>
                 <View style = {styles.avatarContainer}>
@@ -167,13 +189,22 @@ class Profile extends Component {
               }
               {showingFollowers == true
                 ? <View style = {styles.followerscontainer}>
-                    <Followers />
+                    <Followers navigation={ this.props.navigation }/>
                   </View>
                 : console.log('FOLLOWERS ARE NOT BEING SHOWN.')
               }
               <View>
-                <UserPosts />
+                <PostInput />
+                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
+                  Add a plant
+                </AlteredTextButton>
+                {showingPlantInput == true
+                  ? <PlantInput />
+                  : null
+                }
                 <UserPlants />
+                <UserPosts />
+                <UserGardens />
               </View>
             </View>
           </ScrollView>
@@ -194,14 +225,19 @@ const mapStateToProps = (state, ownProps) => {
       fetched_user: state.user.fetched,
       fetched_posts: state.userposts.fetched,
       fetched_plants: state.userplants.fetched,
+      fetched_usergardens: state.usergardens.fetched,
       user: state.user.user,
       post_items: state.userposts.items,
       plant_items: state.userplants.items,
+      usergarden_items: state.usergardens.items,
+      gardenChoice: state.usergardens.gardenChoice,
       token: state.auth.token,
       showingFollowers: state.followers.showingFollowers,
       showingFollowed: state.followed.showingFollowed,
+      showingPlantInput: state.userplants.showingPlantInput,
       followers: state.followers,
       length: state.followers.items.length,
+
     };
 }
 

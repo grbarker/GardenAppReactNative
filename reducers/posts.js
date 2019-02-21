@@ -1,4 +1,7 @@
-import { FETCH_POSTS, LESS_POSTS, FETCH_POSTS_SUCCESS, FETCH_POSTS_FAILURE, FETCH_MORE_POSTS_SUCCESS, FETCH_MORE_POSTS_FAILURE } from '../actions/posts'
+import { FETCH_POSTS, LESS_POSTS, FETCH_POSTS_SUCCESS, FETCH_POSTS_FAILURE,
+  FETCH_MORE_POSTS_SUCCESS, FETCH_MORE_POSTS_FAILURE, SUBMIT_USER_POST_SUCCESS,
+  SUBMIT_USER_POST_FAILURE
+} from '../actions/posts'
 
 const INITIAL_STATE = {
   fetching: false,
@@ -6,10 +9,20 @@ const INITIAL_STATE = {
   page: null,
   links: {},
   items: [],
+  postSuccessfull: false,
   error: null
 }
 export default function posts(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case SUBMIT_USER_POST_SUCCESS:
+      return {
+        ...state,
+        postSuccessfull: true
+      };
+    case SUBMIT_USER_POST_FAILURE:
+      return {
+        postSuccessfull: false
+      };
     case FETCH_POSTS:
       return {
         ...state,

@@ -35,6 +35,12 @@ class Followers extends Component {
     console.log(this.props.state.followers)
   }
 
+  toUserProfile = (user) => {
+    this.props.navigation.push('Profile',
+      { user: user }
+    );
+  }
+
   async componentDidMount() {
     const { dispatch, token, fetched_followers, page } = this.props
     //console.log(page);
@@ -49,19 +55,22 @@ class Followers extends Component {
           }
         );
         let responseJSON = await response.json();
-        console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
+        //console.log('FIRST API CALL FOR FOLLOWERS RESPONSEJSON....', responseJSON)
         dispatch(getFollowersSuccess(responseJSON))
       } catch (error) {
         console.error(error);
       }
     } else {
-      console.log('Followers already fetched!')
+      //console.log('Followers already fetched!')
     }
   }
 
 
   render() {
     const {  links, follower_items, fetching, fetched_followers, token, error, state, user } = this.props
+    //console.log("Info coming up next")
+    //console.info(this.props.navigation);
+    //console.log("Info should have printed")
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE TextButton
     //AND THEN FIGURE OUT HOW TO dispatch getFollowers
@@ -74,7 +83,7 @@ class Followers extends Component {
         uri = links.next;
       }
       //console.log(state)
-      console.log("Trying to get the uri.....", uri)
+      //console.log("Trying to get the uri.....", uri)
       return (
         <ScrollView style={styles.scrollViewAsContainer}>
           <View>
@@ -82,7 +91,16 @@ class Followers extends Component {
               <Text style = {styles.scrollViewHeaderText}>{user.follower_count} people are following you.</Text>
             </View>
             {follower_items.map((follower_item, index) => (
-              <View key = {index} style = {{flex: 1, flexDirection: 'row'}}>
+              <TouchableOpacity
+                key = {index}
+                style = {{flex: 1, flexDirection: 'row'}}
+                onPress={() => {
+                    this.props.navigation.push('Profile', {
+                      user: follower_item
+                    })
+                  }
+                }
+              >
                 <View style = {styles.listAvatarContainer}>
                   <Image
                     style={{width: 95, height: 95}}
@@ -98,7 +116,7 @@ class Followers extends Component {
                     Last seen <Moment element={Text} fromNow>{follower_item.last_seen}</Moment>
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
           <View style={styles.moreLessButtonsContainer}>
@@ -106,7 +124,7 @@ class Followers extends Component {
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
-                onPress={e => this.lessFollowera()}>
+                onPress={e => this.lessFollowers()}>
                 Less Followers
               </AlteredTextButton>
               :
@@ -163,6 +181,7 @@ const mapStateToProps = (state, ownProps) => {
       error: state.followers.error,
       state: state,
       user: state.user.user,
+      navigation: ownProps.navigation
     };
 }
 

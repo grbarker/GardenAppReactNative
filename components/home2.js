@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
 import Posts  from './posts'
 import Plants from './plants'
+import PostInput from './postInput'
 import { Constants, Location, Permissions } from 'expo';
 
 class Home extends Component {
@@ -33,7 +34,9 @@ class Home extends Component {
   }
 
   toProfile = () => {
-    this.props.navigation.navigate('Profile');
+    this.props.navigation.navigate('Profile',
+      { user: null }
+    );
   }
 
 
@@ -59,6 +62,9 @@ class Home extends Component {
         <View style = {styles.container}>
           <Text style = {styles.text}>Home Page!</Text>
         </View>
+        <View>
+          <PostInput />
+        </View>
         <TextButton style={{margin: 10}} onPress={this.toMap}>
           Map
         </TextButton>
@@ -66,8 +72,8 @@ class Home extends Component {
           Profile
         </TextButton>
         <View>
-        <Plants />
           <Posts />
+          <Plants />
         </View>
       </ScrollView>
     )

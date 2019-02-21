@@ -13,7 +13,7 @@ class Map extends Component {
   static navigationOptions = ({ navigation }) => {
 
     return {
-      title: 'Home',
+      title: 'Map',
       headerRight: (
         <Button
           onPress={() => navigation.navigate('Auth')}

@@ -75,23 +75,23 @@ class Plants extends Component {
           <View style={styles.moreLessButtonsContainer}>
             {(links.prev) ?
               <AlteredTextButton
-                style={styles.textButton}
-                textStyle={styles.myGreenText}
+                style={styles.filledTextButton}
+                textStyle={styles.whiteText}
                 onPress={e => this.lessPlants()}
               >
                 Less Plants
               </AlteredTextButton>
               :
                 <AlteredTextButton
-                  style={styles.inactiveTextButton}
-                  textStyle={styles.gray4Text}
+                  style={styles.inactiveFilledTextButton}
+                  textStyle={styles.whiteText}
                   onPress={this.inactiveButton}>
                   Less Plants
                 </AlteredTextButton>
             }
             {(links.next) ?
               <AlteredTextButton
-                style={styles.textButton}
+                style={styles.filledTextButton}
                 textStyle={styles.whiteText}
                 onPress={e => this.nextPlants(token, uri)}>
                 More Plants
@@ -99,7 +99,7 @@ class Plants extends Component {
               :
                 <AlteredTextButton
                   style={styles.inactiveTextButton}
-                  textStyle={styles.gray4Text}
+                  textStyle={styles.whiteText}
                   onPress={this.inactiveButton}>
                   More Plants
                 </AlteredTextButton>
@@ -140,7 +140,9 @@ export default connect(mapStateToProps)(Plants);
 
 const styles = StyleSheet.create ({
   scrollViewAsContainer: {
-    borderWidth: 2,
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
     borderRadius: 3,
     borderColor: my_green,
     marginTop: 3,
@@ -159,8 +161,8 @@ const styles = StyleSheet.create ({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 5,
-    margin: 3,
-    backgroundColor: my_green,
+    margin: 2,
+    backgroundColor: '#f0f4f0',
     borderTopWidth: 2,
     borderTopColor: my_green,
   },
@@ -183,6 +185,20 @@ const styles = StyleSheet.create ({
     borderWidth: 2,
     borderRadius: 5
   },
+  filledTextButton: {
+    padding: 5,
+    backgroundColor: my_green,
+    borderColor: my_green,
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  inactiveFilledTextButton: {
+    padding: 5,
+    backgroundColor: gray4,
+    borderColor: gray4,
+    borderWidth: 2,
+    borderRadius: 5
+  },
   scrollViewHeaderText: {
     fontSize: 20,
     color: '#f0f4f0',
@@ -190,6 +206,10 @@ const styles = StyleSheet.create ({
   text: {
     fontSize: 16,
     color: black
+  },
+  whiteText: {
+    fontSize: 16,
+    color: white
   },
   myGreenText: {
     fontSize: 16,

@@ -8,6 +8,7 @@ import followed from './followed.js';
 import userposts from './userposts.js';
 import userplants from './userplants.js';
 import locations from './locations.js';
+import usergardens from './usergardens.js';
 
 const rootReducer = combineReducers({
   auth, //<--Login
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   userposts, //<--UserPosts
   userplants, //<--UserPlants
   locations, //<--Locations
+  usergardens, //<-- UserGardens
 });
 
 export default rootReducer;
