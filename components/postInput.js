@@ -37,7 +37,7 @@ class PostInput extends Component {
             placeholder='Whatcha got to say?'
             autoCapitalize='none'
             autoCorrect={false}
-            autoFocus={true}
+            autoFocus={false}
             keyboardType='email-address'
             value={this.state.postText}
             onChangeText={(text) => this.setState({ postText: text })} />

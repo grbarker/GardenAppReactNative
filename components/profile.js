@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Picker, PickerIOS, ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
 import ModalSelector from 'react-native-modal-selector'
 import Moment from 'react-moment';
 import 'moment-timezone';
@@ -20,6 +20,8 @@ import UserPosts from './userposts'
 import UserPlants from './userplants'
 import UserGardens from './usergardens'
 import PlantInput from './plantInput'
+import PlantForm from './plantForm'
+import PostForm from './postForm'
 
 
 class Profile extends Component {
@@ -92,6 +94,18 @@ class Profile extends Component {
       gardenID: gardenChoice.id
     })
   }
+
+  submit = (values) => {
+      // print the form values to the console
+      console.log(values);
+      alert({values});
+    }
+
+  postSubmit = (values) => {
+      // print the form values to the console
+      console.log(values);
+      alert({values});
+    }
 
 
   toMap = () => {
@@ -195,11 +209,16 @@ class Profile extends Component {
               }
               <View>
                 <PostInput />
+                <PostForm onSubmit={this.postSubmit} style={styles}/>
                 <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
                   Add a plant
                 </AlteredTextButton>
                 {showingPlantInput == true
                   ? <PlantInput />
+                  : null
+                }
+                {showingPlantInput == true
+                  ? <PlantForm onSubmit={this.submit} style={styles} data={usergarden_items}/>
                   : null
                 }
                 <UserPlants />
@@ -313,5 +332,13 @@ const styles = StyleSheet.create ({
   profileText: {
     fontSize: 24,
     color: my_green
+  },
+  reduxFormField: {
+    margin: 5,
+    padding: 5,
+    backgroundColor: '#f0f4f0',
+    borderWidth: 2,
+    borderColor: my_green,
+
   }
 })

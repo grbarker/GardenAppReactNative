@@ -9,6 +9,7 @@ import { white, black, gray, purple, green, blue, my_green, my_blue, pink, light
 import Posts  from './posts'
 import Plants from './plants'
 import PostInput from './postInput'
+import PostForm from './postForm'
 import { Constants, Location, Permissions } from 'expo';
 
 class Home extends Component {
@@ -28,6 +29,12 @@ class Home extends Component {
   state = {
     locationResult: null
   }
+
+  postSubmit = (values) => {
+      // print the form values to the console
+      console.log(values);
+      alert({values});
+    }
 
   toMap = () => {
     this.props.navigation.navigate('Map');
@@ -64,6 +71,7 @@ class Home extends Component {
         </View>
         <View>
           <PostInput />
+          <PostForm onSubmit={this.postSubmit}/>
         </View>
         <TextButton style={{margin: 10}} onPress={this.toMap}>
           Map
