@@ -5,12 +5,12 @@ import TextButton from './TextButton'
 import 'moment-timezone';
 import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
-import { getUserPosts, submitUserPost, submitUserPostFetch, hidePostInput } from '../actions/userposts'
+import { getUserGardens, submitUserGarden, submitUserGardenFetch, hideGardenInput } from '../actions/usergardens'
 import renderField from './renderField'
 
 
 
-class PostForm extends Component {
+class GardenForm extends Component {
 
 
   render() {
@@ -19,12 +19,20 @@ class PostForm extends Component {
     return (
       <ScrollView onSubmit={handleSubmit}>
         <Field
-          name="post"
+          name="garden"
           type="text"
           component={renderField}
-          label="Post Name"
-          placeholder="Whatcha wanna say?"
-          style={styles.reduxFormField}
+          label="Plant Name"
+          placeholder="What is the name of your new garden?"
+          style={style.reduxFormField}
+        />
+        <Field
+          name="address"
+          type="text"
+          component={renderField}
+          label="Address"
+          placeholder="What is the address of your new garden?"
+          style={style.reduxFormField}
         />
         <View>
           <Button title='Submit' type="submit" disabled={pristine || submitting} onPress={handleSubmit}>
@@ -40,19 +48,24 @@ class PostForm extends Component {
 }
 
 
-PostForm = reduxForm({
-  form: 'post',
+GardenForm = reduxForm({
+  form: 'garden',
   validate: (values) => {
     const errors = {};
-    errors.post = !values.post
-      ? 'Post field is required'
+    errors.garden = !values.garden
+      ? 'Garden field is required'
       : undefined;
+
+    errors.address = !values.address
+      ? 'Address field is required'
+      :  undefined;
+
     return errors;
   }
-})(PostForm);
+})(GardenForm);
 
 
-export default PostForm
+export default GardenForm
 
 
 const styles = StyleSheet.create ({
@@ -73,15 +86,7 @@ const styles = StyleSheet.create ({
      fontSize: 20,
       color: black
    },
-   reduxFormField: {
-     margin: 5,
-     padding: 5,
-     backgroundColor: '#f0f4f0',
-     borderWidth: 2,
-     borderColor: my_green,
-
-   },
-   postInputField: {
+   gardenInputField: {
      margin: 5,
      padding: 5,
      backgroundColor: '#f0f4f0',

@@ -22,6 +22,7 @@ import UserGardens from './usergardens'
 import PlantInput from './plantInput'
 import PlantForm from './plantForm'
 import PostForm from './postForm'
+import GardenForm from './gardenForm'
 
 
 class Profile extends Component {
@@ -210,6 +211,7 @@ class Profile extends Component {
               <View>
                 <PostInput />
                 <PostForm onSubmit={this.postSubmit} style={styles}/>
+                <GardenForm onSubmit={this.gardenSubmit} style={styles}/>
                 <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
                   Add a plant
                 </AlteredTextButton>

@@ -3,7 +3,7 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button
 import ModalSelector from 'react-native-modal-selector'
 
 
-const renderSelector = ({ input, data, style, label, type, meta: { touched, error, invalid, warning } }) => (
+const renderSelector = ({ input, data, style, placeholder, label, type, meta: { touched, error, invalid, warning } }) => (
   <View className="text-input">
     <View>
       <ModalSelector
@@ -19,7 +19,7 @@ const renderSelector = ({ input, data, style, label, type, meta: { touched, erro
           <TextInput
               style={style}
               editable={false}
-              placeholder="Select a garden to plant something in!"
+              placeholder={placeholder}
               value={input.value.garden}/>
 
       </ModalSelector>

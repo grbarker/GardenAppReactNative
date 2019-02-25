@@ -24,6 +24,7 @@ class PlantForm extends Component {
           type="text"
           component={renderField}
           label="Plant Name"
+          placeholder="What did you plant?"
           style={style.reduxFormField}
         />
         <Field
@@ -31,6 +32,7 @@ class PlantForm extends Component {
           type="text"
           component={renderSelector}
           label="Garden"
+          placeholder="What garden did you plant it in?"
           data= {data}
         />
         <View>
