@@ -160,12 +160,13 @@ class Map extends Component {
                       coordinate={coord}
                       title={location.address}
                       description={gardens}
+                      image={require('../utils/img/rose64px.png')}
                       onCalloutPress={() => {
                         this.props.navigation.navigate('Location', { location })
                         }
                       }
                     >
-                      <Callout>
+                      <Callout style={{padding: 0, }}>
                         <CalloutView location={location} />
                       </Callout>
                     </MapView.Marker>

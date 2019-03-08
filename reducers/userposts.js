@@ -1,4 +1,8 @@
-import { FETCH_USER_POSTS, LESS_USER_POSTS, FETCH_USER_POSTS_SUCCESS, FETCH_USER_POSTS_FAILURE, FETCH_MORE_USER_POSTS_SUCCESS, FETCH_MORE_USER_POSTS_FAILURE } from '../actions/userposts'
+import { FETCH_USER_POSTS, LESS_USER_POSTS, FETCH_USER_POSTS_SUCCESS,
+  FETCH_USER_POSTS_FAILURE, FETCH_MORE_USER_POSTS_SUCCESS,
+  FETCH_MORE_USER_POSTS_FAILURE, SHOW_POST_INPUT, HIDE_POST_INPUT,
+  SUBMIT_USER_POST_SUCCESS, SUBMIT_USER_POST_FAILURE
+} from '../actions/userposts'
 
 const INITIAL_STATE = {
   fetching: false,
@@ -6,10 +10,21 @@ const INITIAL_STATE = {
   page: null,
   links: {},
   items: [],
-  error: null
+  postSuccessfull: false,
+  error: null,
+  showingPostInput: false
 }
 export default function userposts(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case SUBMIT_USER_POST_SUCCESS:
+      return {
+        ...state,
+        postSuccessfull: true
+      };
+    case SUBMIT_USER_POST_FAILURE:
+      return {
+        postSuccessfull: false
+      };
     case FETCH_USER_POSTS:
       return {
         ...state,
@@ -56,6 +71,16 @@ export default function userposts(state = INITIAL_STATE, action) {
           self: "/api/user/posts?per_page=10&page=1",
         },
         items: state.items.splice(0, 10)
+      };
+    case SHOW_POST_INPUT:
+      return {
+        ...state,
+        showingPostInput: true
+      };
+    case HIDE_POST_INPUT:
+      return {
+        ...state,
+        showingPostInput: false
       };
     default :
       return state

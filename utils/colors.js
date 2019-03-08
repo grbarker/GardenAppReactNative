@@ -7,6 +7,7 @@ export const pink = '#b93fb3'
 export const black = '#000000'
 export const my_blue = '#3b73b1'
 export const my_green = '#2d882d'
+export const my_light_green = '#569f56'
 
 //Gray scale: 0(white)--->10(gray)
 export const white = '#fff'

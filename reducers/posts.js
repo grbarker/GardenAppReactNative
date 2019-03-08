@@ -1,6 +1,6 @@
 import { FETCH_POSTS, LESS_POSTS, FETCH_POSTS_SUCCESS, FETCH_POSTS_FAILURE,
   FETCH_MORE_POSTS_SUCCESS, FETCH_MORE_POSTS_FAILURE, SUBMIT_USER_POST_SUCCESS,
-  SUBMIT_USER_POST_FAILURE
+  SUBMIT_USER_POST_FAILURE, SHOW_POST_INPUT, HIDE_POST_INPUT
 } from '../actions/posts'
 
 const INITIAL_STATE = {
@@ -10,7 +10,8 @@ const INITIAL_STATE = {
   links: {},
   items: [],
   postSuccessfull: false,
-  error: null
+  error: null,
+  showingPostInput: false
 }
 export default function posts(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -69,6 +70,16 @@ export default function posts(state = INITIAL_STATE, action) {
           self: "/api/posts?per_page=10&page=1",
         },
         items: state.items.splice(0, 10)
+      };
+    case SHOW_POST_INPUT:
+      return {
+        ...state,
+        showingPostInput: true
+      };
+    case HIDE_POST_INPUT:
+      return {
+        ...state,
+        showingPostInput: false
       };
     default :
       return state

@@ -1,15 +1,27 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
+import {
+  ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet,
+  Button, Image, Platform
+} from 'react-native'
 import ModalSelector from 'react-native-modal-selector'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import AlteredTextButton from './AlteredTextButton'
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
-import { white, my_green, green, gray, red, purple, orange, blue, my_blue, lightPurp, black, pink } from '../utils/colors'
-import { getUserPosts, getUserPostsSuccess, getUserPostsFailure } from '../actions/userposts'
-import { getUserPlants, getUserPlantsSuccess, getUserPlantsFailure, hidePlantInput, showPlantInput } from '../actions/userplants'
-import { updatePicker } from '../actions/usergardens'
+import {
+  white, my_green, green, gray, red, purple, orange, blue, my_blue,
+  lightPurp, black, pink
+} from '../utils/colors'
+import {
+  getUserPosts, getUserPostsSuccess, getUserPostsFailure,
+  submitUserPost, hidePostInput, showPostInput
+} from '../actions/userposts'
+import {
+  getUserPlants, getUserPlantsSuccess, getUserPlantsFailure,
+  submitUserPlant, hidePlantInput, showPlantInput
+} from '../actions/userplants'
+import { submitUserGarden, hideGardenInput, showGardenInput, updatePicker } from '../actions/usergardens'
 import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
 import { showFollowers, hideFollowers } from '../actions/followers'
 import { showFollowed, hideFollowed } from '../actions/followed'
@@ -23,6 +35,12 @@ import PlantInput from './plantInput'
 import PlantForm from './plantForm'
 import PostForm from './postForm'
 import GardenForm from './gardenForm'
+import axios from 'axios';
+import { SubmissionError } from 'redux-form'
+import { Ionicons } from '../node_modules/@expo/vector-icons';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import Icons from 'react-native-vector-icons/Ionicons'
+import Iconss from 'react-native-vector-icons/SimpleLineIcons'
 
 
 class Profile extends Component {
@@ -64,7 +82,6 @@ class Profile extends Component {
       console.error(error);
     }
   }
-
   async fetchUser(user){
     const { dispatch, token } = this.props
     try {
@@ -96,18 +113,46 @@ class Profile extends Component {
     })
   }
 
-  submit = (values) => {
-      // print the form values to the console
-      console.log(values);
-      alert({values});
-    }
+  plantSubmit = (values) => {
+    const { dispatch, token} = this.props
 
+    dispatch(submitUserPlant(dispatch, token, values.garden, values.garden.name, values.garden.id, values.plant))
+    // print the form values to the console
+    console.log(
+      'Garden:  ', values.garden,
+      ',  Garden Name:  ', values.garden.name,
+      ',  Garden ID:  ',  values.garden.id,
+      ',  Plant:  ', values.plant
+    );
+  }
   postSubmit = (values) => {
-      // print the form values to the console
-      console.log(values);
-      alert({values});
-    }
+    const { dispatch, token} = this.props
 
+    dispatch(submitUserPost(dispatch, token, values.post))
+    // print the form values to the console
+    console.log(values.post);
+    }
+  gardenSubmit = (values) => {
+    const { dispatch, token} = this.props
+
+    /*Note: The following request is disabled while troubleshooting error
+    //handling on the gardenForm to keep from adding so many new gardens
+    axios({
+      method: 'GET',
+      url: `https://maps.googleapis.com/maps/api/geocode/json?address=${values.address}&key=AIzaSyCyX0uZDxs4ekWQz-uSuhvhpABMOFf8QfI`,
+    }).then((response) => {
+      if (response.data.status == "ZERO_RESULTS") {
+        throw new SubmissionError({
+          error: 'Invalid Address'
+        })
+      }
+      console.log(response.data.status);
+    })*/
+
+    //dispatch(submitUserGarden(dispatch, token, values.garden, values.address))
+    // print the form values to the console
+    console.log(values);
+    }
 
   toMap = () => {
     this.props.navigation.navigate('Map');
@@ -116,6 +161,13 @@ class Profile extends Component {
     this.props.navigation.navigate('Home');
   }
 
+  togglePostInput = (e) => {
+    const { dispatch, showingPostInput } = this.props
+    showingPostInput
+    ? dispatch(hidePostInput())
+    : dispatch(showPostInput())
+    e.preventDefault();
+  }
   togglePlantInput = (e) => {
     const { dispatch, showingPlantInput } = this.props
     showingPlantInput
@@ -123,7 +175,13 @@ class Profile extends Component {
     : dispatch(showPlantInput())
     e.preventDefault();
   }
-
+  toggleGardenInput = (e) => {
+    const { dispatch, showingGardenInput } = this.props
+    showingGardenInput
+    ? dispatch(hideGardenInput())
+    : dispatch(showGardenInput())
+    e.preventDefault();
+  }
   toggleFollowers = (e) => {
     const { dispatch, showingFollowers } = this.props
     showingFollowers
@@ -131,7 +189,6 @@ class Profile extends Component {
     : dispatch(showFollowers()) && dispatch(hideFollowed())
     e.preventDefault();
   }
-
   toggleFollowed = (e) => {
     const { dispatch, showingFollowed } = this.props
     showingFollowed
@@ -142,8 +199,9 @@ class Profile extends Component {
 
   render() {
     const { dispatch, user, fetching, fetched_user, showingFollowers,
-      showingFollowed, showingPlantInput, followers, length,
-      fetched_usergardens, usergarden_items, gardenChoice
+      showingFollowed, showingPlantInput, showingGardenInput, showingPostInput,
+      followers, length,fetched_usergardens, usergarden_items, gardenChoice,
+      addressError
     } = this.props
     const { selectedGarden, gardenName, gardenID } = this.state
 
@@ -165,7 +223,7 @@ class Profile extends Component {
             }}
           />
           <ScrollView>
-            <View style = {styles.postplantscontainer}>
+            <View style = {styles.postplantsContainer}>
               <View style = {styles.profileTitleContainer}>
                 <Text style = {styles.profileText}>{user.username}'s Profile Page!</Text>
               </View>
@@ -177,6 +235,7 @@ class Profile extends Component {
                   />
                 </View>
                 <View style = {styles.profileInfoContainer}>
+                  <Text style = {styles.profileText}>{user.username}</Text>
                   <Text style = {styles.text}>
                     <AlteredTextButton onPress={this.toggleFollowed}>
                       Following: {user.followed_count}
@@ -193,39 +252,142 @@ class Profile extends Component {
                   </Text>
                 </View>
               </View>
-              <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toMap}>
-                Map
-              </AlteredTextButton>
-              {showingFollowed == true
-                ? <View style = {styles.followerscontainer}>
-                    <Followed />
-                  </View>
-                : console.log('FOLLOWED ARE NOT BEING SHOWN.')
-              }
-              {showingFollowers == true
-                ? <View style = {styles.followerscontainer}>
-                    <Followers navigation={ this.props.navigation }/>
-                  </View>
-                : console.log('FOLLOWERS ARE NOT BEING SHOWN.')
-              }
               <View>
-                <PostInput />
-                <PostForm onSubmit={this.postSubmit} style={styles}/>
-                <GardenForm onSubmit={this.gardenSubmit} style={styles}/>
-                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
-                  Add a plant
+                {Platform.OS === 'ios'
+                ? <Icons.Button
+                    name="ios-map"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.toMap}
+                  >
+                    Map
+                  </Icons.Button>
+                : <Icons.Button
+                    name="md-map"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.toMap}
+                  >
+                    Map
+                  </Icons.Button>
+                }
+                {Platform.OS === 'ios'
+                  ? <Icons.Button
+                    name="ios-create"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePostInput}
+                    >
+                      Got something to say?
+                    </Icons.Button>
+                  : <Icons.Button
+                    name="md-create"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePostInput}
+                    >
+                      Got something to say?
+                    </Icons.Button>
+                }
+                {Platform.OS === 'ios'
+                  ? <Iconss.Button
+                    name="speech"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePostInput}
+                    >
+                      Got something to say?
+                    </Iconss.Button>
+                  : <Iconss.Button
+                    name="speech"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePostInput}
+                    >
+                      Got something to say?
+                    </Iconss.Button>
+                }
+                {Platform.OS === 'ios'
+                  ? <Icons.Button
+                    name="ios-leaf"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePlantInput}
+                    >
+                      Plant something?
+                    </Icons.Button>
+                  : <Icons.Button
+                    name="md-leaf"
+                    color={my_green}
+                    backgroundColor="#f0f4f0"
+                    onPress={this.togglePlantInput}
+                    >
+                      Got something to say?
+                    </Icons.Button>
+                }
+              </View>
+              <View>
+              {showingPostInput == true
+                ? <PostForm onSubmit={this.postSubmit} style={styles} />
+                : null
+              }
+              {showingPlantInput == true
+                ? <PlantInput />
+                : null
+              }
+              {showingPlantInput == true
+                ? <PlantForm onSubmit={this.plantSubmit} style={styles} data={usergarden_items}/>
+                : null
+              }
+              {showingGardenInput == true
+                ? <GardenForm onSubmit={this.gardenSubmit} style={styles} />
+                : null
+              }
+              </View>
+              <View>
+                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toMap}>
+                  Map
                 </AlteredTextButton>
-                {showingPlantInput == true
-                  ? <PlantInput />
+                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePostInput}>
+                  Got something to say?
+                </AlteredTextButton>
+                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toggleGardenInput}>
+                  Add a Garden
+                  {Platform.OS === 'ios'
+                    ? <Ionicons name="ios-add" size={28} color={my_green} />
+                    : <Ionicons name="md-add" size={20} color={my_green} />
+                  }
+                  <Image
+                    source={require('../utils/img/garden.psd')}
+                    resizeMode={"contain"}
+                    style={{width: 28, height: 28}}
+                  />
+                </AlteredTextButton>
+                {addressError
+                ? <Text>{addressError}</Text>
+                : null
+                }
+                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
+                  {Platform.OS === 'ios'
+                    ? <Ionicons name="ios-leaf" size={28} color={my_green} />
+                    : <Ionicons name="md-leaf" size={20} color={my_green} />
+                  }
+                </AlteredTextButton>
+                {showingFollowed == true
+                  ? <View style = {styles.followerscontainer}>
+                      <Followed />
+                    </View>
                   : null
                 }
-                {showingPlantInput == true
-                  ? <PlantForm onSubmit={this.submit} style={styles} data={usergarden_items}/>
+                {showingFollowers == true
+                  ? <View style = {styles.followerscontainer}>
+                      <Followers navigation={ this.props.navigation }/>
+                    </View>
                   : null
                 }
+                <UserGardens />
                 <UserPlants />
                 <UserPosts />
-                <UserGardens />
               </View>
             </View>
           </ScrollView>
@@ -252,10 +414,13 @@ const mapStateToProps = (state, ownProps) => {
       plant_items: state.userplants.items,
       usergarden_items: state.usergardens.items,
       gardenChoice: state.usergardens.gardenChoice,
+      addressError: state.usergardens.error,
       token: state.auth.token,
       showingFollowers: state.followers.showingFollowers,
       showingFollowed: state.followed.showingFollowed,
+      showingPostInput: state.userposts.showingPostInput,
       showingPlantInput: state.userplants.showingPlantInput,
+      showingGardenInput: state.usergardens.showingGardenInput,
       followers: state.followers,
       length: state.followers.items.length,
 
@@ -322,6 +487,7 @@ const styles = StyleSheet.create ({
     marginTop: 5,
   },
   myGreenTextButton: {
+    margin: 5,
     padding: 5,
     borderColor: my_green,
     borderWidth: 2,

@@ -7,6 +7,8 @@ export const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
 export const FETCH_MORE_POSTS_SUCCESS = 'FETCH_MORE_POSTS_SUCCESS';
 export const FETCH_MORE_POSTS_FAILURE = 'FETCH_MORE_POSTS_FAILURE';
 export const LESS_POSTS = 'LESS_POSTS';
+export const SHOW_POST_INPUT = 'SHOW_POST_INPUT';
+export const HIDE_POST_INPUT = 'HIDE_POST_INPUT';
 export const SUBMIT_USER_POST_SUCCESS = 'SUBMIT_USER_POST_SUCCESS';
 export const SUBMIT_USER_POST_FAILURE = 'SUBMIT_USER_POST_FAILURE';
 
@@ -81,6 +83,18 @@ export function submitUserPost(dispatch, token, postText) {
 export function lessPosts() {
   return {
     type: LESS_POSTS,
+  };
+}
+
+export function showPostInput() {
+  return {
+    type: SHOW_POST_INPUT,
+  };
+}
+
+export function hidePostInput() {
+  return {
+    type: HIDE_POST_INPUT,
   };
 }
 

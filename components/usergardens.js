@@ -30,7 +30,8 @@ class UserGardens extends Component {
   }
 
   async componentDidMount() {
-    const { dispatch, token } = this.props
+    const { dispatch, token, user } = this.props
+    console.log(user)
     try {
       let response = await fetch(
         `http://34.221.120.52/api/user/gardens`, {
@@ -50,12 +51,13 @@ class UserGardens extends Component {
 
 
   render() {
-    const { links, garden_items, fetching, fetched_gardens, token, error, state, page } = this.props
+    const { links, garden_items, fetching, fetched_gardens, token, user, error, state, page } = this.props
     if (fetched_gardens == true) {
       let uri = '/api/gardens'
       if (links.next) {
         uri = links.next;
       }
+
       return (
         <ScrollView style = {styles.scrollViewAsContainer}>
           <View style = {styles.scrollViewHeaderContainer}>
@@ -65,9 +67,9 @@ class UserGardens extends Component {
             {garden_items.map((garden_item, index) => (
               <View key = {garden_item.id + 1897877577} style = {styles.container}>
                 <Text style = {styles.myGreenText}>{garden_item.name}</Text>
-                <Text style = {styles.text}>Gardener: {garden_item.grower}</Text>
+                <Text style = {styles.text}>Gardener: {user.username}</Text>
                 <Text style = {styles.text}>
-                  Started: <Moment element={Text} fromNow>{garden_item.timestamp}</Moment>
+                  Started: <Moment element={Text} fromNow>{garden_item.created}</Moment>
                 </Text>
               </View>
             ))}
@@ -126,6 +128,7 @@ class UserGardens extends Component {
 const mapStateToProps = (state, ownProps) => {
     return {
       fetched_gardens: state.usergardens.fetched,
+      user: state.user.user,
       page: state.posts.page,
       links: state.usergardens.links,
       garden_items: state.usergardens.items,

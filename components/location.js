@@ -261,7 +261,7 @@ const styles = StyleSheet.create ({
       backgroundColor: '#f0f4f0',
    },
    text: {
-      fontSize: 12,
+      fontSize: 16,
       color: '#42260A'
    }
 })

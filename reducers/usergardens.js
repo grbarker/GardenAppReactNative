@@ -1,6 +1,8 @@
-import { FETCH_USER_GARDENS, LESS_USER_GARDENS, FETCH_USER_GARDENS_SUCCESS, FETCH_USER_GARDENS_FAILURE,
-  FETCH_MORE_USER_GARDENS_SUCCESS, FETCH_MORE_USER_GARDENS_FAILURE, SUBMIT_USER_GARDEN_SUCCESS,
-  SUBMIT_USER_GARDEN_FAILURE, UPDATE_PICKER_CHOICE
+import { FETCH_USER_GARDENS, LESS_USER_GARDENS, FETCH_USER_GARDENS_SUCCESS,
+  FETCH_USER_GARDENS_FAILURE, FETCH_MORE_USER_GARDENS_SUCCESS,
+  FETCH_MORE_USER_GARDENS_FAILURE, SUBMIT_USER_GARDEN_SUCCESS,
+  SUBMIT_USER_GARDEN_FAILURE, UPDATE_PICKER_CHOICE, SHOW_GARDEN_INPUT,
+  HIDE_GARDEN_INPUT
 } from '../actions/usergardens'
 
 const INITIAL_STATE = {
@@ -11,7 +13,8 @@ const INITIAL_STATE = {
   items: [],
   gardenChoice: {},
   gardenSuccessfull: false,
-  error: null
+  error: null,
+  showingGardenInput: false
 }
 export default function usergardens(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -27,7 +30,8 @@ export default function usergardens(state = INITIAL_STATE, action) {
       };
     case SUBMIT_USER_GARDEN_FAILURE:
       return {
-        gardenSuccessfull: false
+        gardenSuccessfull: false,
+        error: action.payload
       };
     case FETCH_USER_GARDENS:
       return {
@@ -76,6 +80,16 @@ export default function usergardens(state = INITIAL_STATE, action) {
           self: "/api/gardens?per_page=10&page=1",
         },
         items: state.items.splice(0, 10)
+      };
+    case SHOW_GARDEN_INPUT:
+      return {
+        ...state,
+        showingGardenInput: true
+      };
+    case HIDE_GARDEN_INPUT:
+      return {
+        ...state,
+        showingGardenInput: false
       };
     default :
       return state

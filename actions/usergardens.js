@@ -10,6 +10,8 @@ export const LESS_USER_GARDENS = 'LESS_GARDENS';
 export const SUBMIT_USER_GARDEN_SUCCESS = 'SUBMIT_USER_GARDEN_SUCCESS';
 export const SUBMIT_USER_GARDEN_FAILURE = 'SUBMIT_USER_GARDEN_FAILURE';
 export const UPDATE_PICKER_CHOICE = 'UPDATE_PICKER_CHOICE';
+export const SHOW_GARDEN_INPUT = 'SHOW_GARDEN_INPUT';
+export const HIDE_GARDEN_INPUT = 'HIDE_GARDEN_INPUT';
 
 const api = "http://34.221.120.52/api/user/gardens"
 
@@ -23,22 +25,22 @@ export function getUserGardens(dispatch, token, uri_end) {
     })
     .then((response) => {
       (uri_end === '/api/user/gardens')
-      ? (dispatch(getGardensSuccess(response.data)) && console.log('GETTING FIRST SET OF GARDENS AGAIN AFTER A GARDEN SUBMISSION'))
-      : (dispatch(getMoreGardensSuccess(response.data)) && console.log('GETTING MORE GARDENS'))
+      ? (dispatch(getUserGardensSuccess(response.data)) && console.log('GETTING FIRST SET OF GARDENS AGAIN AFTER A GARDEN SUBMISSION'))
+      : (dispatch(getMoreUserGardensSuccess(response.data)) && console.log('GETTING MORE GARDENS'))
     })
     .catch(error => {
-       dispatch(getMoreGardensFailure(error.response.data)) && console.log(error.response.data.error)
+       dispatch(getMoreUserGardensFailure(error.response.data)) && console.log(error.response.data.error)
     })
     };
 }
 
 
-export function submitUserGardenFetch(dispatch, token, gardenText) {
+export function submitUserGardenFetch(dispatch, token, gardenName) {
   var uri = 'http://34.221.120.52/api/user/garden'
   return function (dispatch)  {
     console.log("Trying to DEBUG this fetch GARDEN request for submitting a user garden!!!", token, ", ", gardenText)
     fetch(uri, {
-      method: 'GARDEN',
+      method: 'POST',
       headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
       data: {
         gardenText: gardenText
@@ -55,26 +57,27 @@ export function submitUserGardenFetch(dispatch, token, gardenText) {
 }
 
 
-export function submitUserGarden(dispatch, token, gardenText) {
+export function submitUserGarden(dispatch, token, gardenName, gardenAddress) {
   var uri = 'http://34.221.120.52/api/user/garden'
   return function (dispatch)  {
-    console.log("Trying to DEBUG this axios GARDEN request for submitting a user garden!!!", token, ", ", gardenText)
+    console.log("Trying to DEBUG this axios GARDEN request for submitting a user garden!!!", token, ", Garden Name:  ", gardenName, ", Garden Address", gardenAddress)
     axios({
-      method: 'garden',
+      method: 'POST',
       url: uri,
       headers: {
         "Authorization": `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       data: {
-        "gardenText": gardenText
+        "gardenName": gardenName,
+        "gardenAddress": gardenAddress
       }
     })
     .then((response) => {
-      dispatch(getUserGardens(dispatch, token, '/api/gardens'))
+      dispatch(getUserGardens(dispatch, token, '/api/user/gardens'))
     })
     .catch(error => {
-       dispatch(submitUserGardenFailure(error)) && console.log('ERROR ! ! !', error)
+       dispatch(submitUserGardenFailure(error.response.status)) && console.log('ERROR ! ! !', error.response.status)
     })
     };
 }
@@ -89,6 +92,18 @@ export function updatePicker(garden) {
 export function lessUserGardens() {
   return {
     type: LESS_USER_GARDENS,
+  };
+}
+
+export function showGardenInput() {
+  return {
+    type: SHOW_GARDEN_INPUT,
+  };
+}
+
+export function hideGardenInput() {
+  return {
+    type: HIDE_GARDEN_INPUT,
   };
 }
 
@@ -127,9 +142,9 @@ export function submitUserGardenSuccess(data) {
   };
 }
 
-export function submitUserGardenFailure(data) {
+export function submitUserGardenFailure(error) {
   return {
     type: SUBMIT_USER_GARDEN_FAILURE,
-    payload: data.error
+    payload: error
   };
 }
