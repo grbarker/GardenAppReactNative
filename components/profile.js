@@ -60,7 +60,8 @@ class Profile extends Component {
   state = {
     selectedGarden: {},
     gardenName: '',
-    gardenID: 0
+    gardenID: 0,
+    gardenImg: null,
 
   }
 
@@ -252,10 +253,11 @@ class Profile extends Component {
                   </Text>
                 </View>
               </View>
-              <View>
+              <View style = {styles.iconButtonsContainer}>
                 {Platform.OS === 'ios'
                 ? <Icons.Button
                     name="ios-map"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.toMap}
@@ -264,6 +266,7 @@ class Profile extends Component {
                   </Icons.Button>
                 : <Icons.Button
                     name="md-map"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.toMap}
@@ -272,59 +275,51 @@ class Profile extends Component {
                   </Icons.Button>
                 }
                 {Platform.OS === 'ios'
-                  ? <Icons.Button
-                    name="ios-create"
+                  ? <Icon.Button
+                    name="pencil"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.togglePostInput}
-                    >
-                      Got something to say?
-                    </Icons.Button>
-                  : <Icons.Button
-                    name="md-create"
+                    >Post
+                    </Icon.Button>
+                  : <Icon.Button
+                    name="pencil"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.togglePostInput}
-                    >
-                      Got something to say?
-                    </Icons.Button>
-                }
-                {Platform.OS === 'ios'
-                  ? <Iconss.Button
-                    name="speech"
-                    color={my_green}
-                    backgroundColor="#f0f4f0"
-                    onPress={this.togglePostInput}
-                    >
-                      Got something to say?
-                    </Iconss.Button>
-                  : <Iconss.Button
-                    name="speech"
-                    color={my_green}
-                    backgroundColor="#f0f4f0"
-                    onPress={this.togglePostInput}
-                    >
-                      Got something to say?
-                    </Iconss.Button>
+                    >Post
+                    </Icon.Button>
                 }
                 {Platform.OS === 'ios'
                   ? <Icons.Button
                     name="ios-leaf"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.togglePlantInput}
                     >
-                      Plant something?
+                      Plant
                     </Icons.Button>
                   : <Icons.Button
                     name="md-leaf"
+                    size={28}
                     color={my_green}
                     backgroundColor="#f0f4f0"
                     onPress={this.togglePlantInput}
                     >
-                      Got something to say?
+                      Plant
                     </Icons.Button>
                 }
+                <TouchableOpacity style={styles.iconTextButton} onPress={this.toggleGardenInput}>
+                  <Image
+                    source={require('../utils/img/soilsolid64px.png')}
+                    resizeMode={"contain"}
+                    style={styles.gardenIcon}
+                  />
+                  <Text style={styles.iconText}>Garden</Text>
+                </TouchableOpacity>
               </View>
               <View>
               {showingPostInput == true
@@ -358,7 +353,7 @@ class Profile extends Component {
                     : <Ionicons name="md-add" size={20} color={my_green} />
                   }
                   <Image
-                    source={require('../utils/img/garden.psd')}
+                    source={require('../utils/img/gardeningsolid64px.png')}
                     resizeMode={"contain"}
                     style={{width: 28, height: 28}}
                   />
@@ -470,6 +465,11 @@ const styles = StyleSheet.create ({
     marginTop: 0,
     backgroundColor: '#f0f4f0',
   },
+  avatarContainer: {
+    flex: 12,
+    padding: 0,
+    marginTop: 0,
+  },
   profileInfoContainer: {
     flex: 28,
     padding: 0,
@@ -477,14 +477,26 @@ const styles = StyleSheet.create ({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
-  avatarContainer: {
-    flex: 12,
-    padding: 0,
-    marginTop: 0,
-  },
   followerscontainer: {
     padding: 8,
     marginTop: 5,
+  },
+  iconButtonsContainer: {
+   maxHeight: 50,
+   width: '100%',
+   flex: 1,
+   flexDirection: 'row',
+   justifyContent: 'space-around',
+   borderBottomWidth: 3,
+   borderColor: my_green,
+  },
+  iconTextButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: "#f0f4f0",
+    borderRadius: 5,
   },
   myGreenTextButton: {
     margin: 5,
@@ -493,8 +505,21 @@ const styles = StyleSheet.create ({
     borderWidth: 2,
     borderRadius: 5
   },
+  gardenIcon: {
+    width: 24,
+    height: 24,
+    marginLeft: 10,
+    marginRight: 15,
+    padding: 0
+  },
+  iconText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: my_green,
+    borderRadius: 5
+  },
   text: {
-   fontSize: 16,
+    fontSize: 16,
     color: '#4f603c'
   },
   profileText: {
