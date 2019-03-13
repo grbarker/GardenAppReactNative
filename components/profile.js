@@ -225,9 +225,6 @@ class Profile extends Component {
           />
           <ScrollView>
             <View style = {styles.postplantsContainer}>
-              <View style = {styles.profileTitleContainer}>
-                <Text style = {styles.profileText}>{user.username}'s Profile Page!</Text>
-              </View>
               <View style = {styles.userProfileContainer}>
                 <View style = {styles.avatarContainer}>
                   <Image
@@ -340,34 +337,6 @@ class Profile extends Component {
               }
               </View>
               <View>
-                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toMap}>
-                  Map
-                </AlteredTextButton>
-                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePostInput}>
-                  Got something to say?
-                </AlteredTextButton>
-                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toggleGardenInput}>
-                  Add a Garden
-                  {Platform.OS === 'ios'
-                    ? <Ionicons name="ios-add" size={28} color={my_green} />
-                    : <Ionicons name="md-add" size={20} color={my_green} />
-                  }
-                  <Image
-                    source={require('../utils/img/gardeningsolid64px.png')}
-                    resizeMode={"contain"}
-                    style={{width: 28, height: 28}}
-                  />
-                </AlteredTextButton>
-                {addressError
-                ? <Text>{addressError}</Text>
-                : null
-                }
-                <AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
-                  {Platform.OS === 'ios'
-                    ? <Ionicons name="ios-leaf" size={28} color={my_green} />
-                    : <Ionicons name="md-leaf" size={20} color={my_green} />
-                  }
-                </AlteredTextButton>
                 {showingFollowed == true
                   ? <View style = {styles.followerscontainer}>
                       <Followed />
@@ -535,3 +504,33 @@ const styles = StyleSheet.create ({
 
   }
 })
+
+
+/*<AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toMap}>
+  Map
+</AlteredTextButton>
+<AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePostInput}>
+  Got something to say?
+</AlteredTextButton>
+<AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.toggleGardenInput}>
+  Add a Garden
+  {Platform.OS === 'ios'
+    ? <Ionicons name="ios-add" size={28} color={my_green} />
+    : <Ionicons name="md-add" size={20} color={my_green} />
+  }
+  <Image
+    source={require('../utils/img/gardeningsolid64px.png')}
+    resizeMode={"contain"}
+    style={{width: 28, height: 28}}
+  />
+</AlteredTextButton>
+{addressError
+? <Text>{addressError}</Text>
+: null
+}
+<AlteredTextButton style={styles.myGreenTextButton} textStyle={styles.profileText} onPress={this.togglePlantInput}>
+  {Platform.OS === 'ios'
+    ? <Ionicons name="ios-leaf" size={28} color={my_green} />
+    : <Ionicons name="md-leaf" size={20} color={my_green} />
+  }
+</AlteredTextButton>*/
