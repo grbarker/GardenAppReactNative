@@ -36,7 +36,7 @@ class CalloutView extends Component {
 
   render() {
     const { location } = this.props
-    console.log(location)
+    //console.log(location)
 
     return (
       <View style = {styles.popupContainer}>\
@@ -69,7 +69,7 @@ class CalloutView extends Component {
               <Text style={styles.h2Text}>{location.plants.length + ' plants'}</Text>
               <ScrollView style={styles.gardenPlantScrollView}>
                 {location.plants.map((plant, index) => {
-                  console.log(plant.name)
+                  //console.log(plant.name)
                   return (
                     <Text key={index} style={styles.text}>{plant.name}</Text>
                   )
