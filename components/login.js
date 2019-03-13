@@ -38,24 +38,23 @@ class Login extends Component {
       });
     }
 
-
     loginSubmit = (values) => {
       const { dispatch } = this.props
 
-      console.log("Trying to DEBUG this axios POST request for submitting a LOGIN!!!", values.username, ", ", values.password)
+      //console.log("Trying to DEBUG this axios POST request for submitting a LOGIN!!!", values.username, ", ", values.password)
       return axios({
         method: 'post',
         url: `http://${values.username}:${values.password}@34.221.120.52/api/tokens`,
       })
       .then((response) => {
-        console.log('RESPONSE:  ', response);
+        //console.log('RESPONSE:  ', response);
         dispatch(getTokenSuccess(values.username, values.password, response.data.token)) && console.log('TOKEN:  ', response.data.token)
-        console.log('!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!');
+        //console.log('!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!');
         this.toHome()
       })
       .catch((error) => {
-        console.log('ERROR ! ! !', error.response.data.error)
-        console.log('ERROR ! ! !', error.response)
+        //console.log('ERROR ! ! !', error.response.data.error)
+        //console.log('ERROR ! ! !', error.response)
         dispatch(getTokenFailure(error.response.data.error))
         throw new SubmissionError({ _error: 'Incorrect Username or Password' })
       })
@@ -82,7 +81,6 @@ class Login extends Component {
           console.error('react native form error:   ', error);
         }
     }
-
     async userSignup () {
         const { dispatch } = this.props
         const { username, password } = this.state
