@@ -1,4 +1,5 @@
 //Post to the mobile login API endpoint
+import axios from 'axios';
 
 export const FETCH_TOKEN_SUCCESS = 'FETCH_TOKEN_SUCCESS';
 export const FETCH_TOKEN_FAILURE = 'FETCH_TOKEN_FAILURE';
@@ -27,11 +28,12 @@ export const signup = (username, password) => {
 };
 
 
-
-export function getTokenSuccess(data) {
+export function getTokenSuccess(username, password, token) {
   return {
     type: FETCH_TOKEN_SUCCESS,
-    payload: data
+    username: username,
+    password:password,
+    token: token,
   };
 }
 
