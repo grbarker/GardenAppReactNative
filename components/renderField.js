@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button } from 'react-native'
+import { red, orange } from '../utils/colors'
 
 
 const renderField = ({ input, label, type, placeholder, style, meta: { touched, error, invalid, warning } }) => (
@@ -13,7 +14,10 @@ const renderField = ({ input, label, type, placeholder, style, meta: { touched, 
         placeholder={placeholder}
         value={input.value}
         onChangeText={input.onChange} />
-      {touched && ((error && <Text>{error}</Text>) || (warning && <Text>{warning}</Text>))}
+      {touched && (
+        (error && <Text style={{ fontSize: 20, color: red, }}>{error}</Text>) ||
+        (warning && <Text style={{ fontSize: 20, color: orange }}>{warning}</Text>)
+      )}
   </View>
 )
 
