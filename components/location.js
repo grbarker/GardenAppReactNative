@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Image } from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity, TouchableHighlight,
+  StyleSheet, Button, Image, Modal, Alert } from 'react-native'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import TextButton from './TextButton'
 import StreetView from 'react-native-streetview';
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
-import { white, blue, my_blue, my_green } from '../utils/colors'
+import { white, blue, my_blue, my_green, my_light_green } from '../utils/colors'
 import { getLocationsSuccess, getLocationsFailure } from '../actions/userposts'
 
 
@@ -32,6 +33,8 @@ class Location extends Component {
     plantsList0: [],
     plantsList1: [],
     plantsList2: [],
+    modalVisible: false,
+    selectedPlant: {},
   };
 
   componentDidMount() {
@@ -56,6 +59,20 @@ class Location extends Component {
   }
   toHome = () => {
     this.props.navigation.navigate('Home');
+  }
+
+  setModalVisible = (plantObj) => {
+    this.setState({
+      modalVisible: true,
+      selectedPlant: plantObj
+    })
+    console.log('SELECTED PLANT:     -------', this.state.selectedPlant)
+  }
+  setModalHidden = () => {
+    this.setState({
+      modalVisible: false,
+      selectedPlant: {}
+    })
   }
 
   selectGarden = (garden) => {
@@ -88,14 +105,55 @@ class Location extends Component {
 
 
   render() {
-    const { gardensSelected, gardenSelected, selectedGarden, plantsSelected, plantsList1, plantsList2 } = this.state
+    const {
+      gardensSelected, gardenSelected, selectedGarden, plantsSelected,
+      plantsList1, plantsList2, modalVisible, selectedPlant
+    } = this.state
     const { location } = this.props.navigation.state.params
-    console.log("Location--->", location);
+    //console.log("Location--->", location);
     // console.log("Plant List 1--->", plantsList1);
     // console.log("Plant List 2--->", plantsList2);
 
     return (
       <ScrollView>
+        <Modal
+          style={{
+            flex: 1, justifyContent: 'space-around', alignItems: 'center',
+            backgroundColor: white, marginTop: 70,
+          }}
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            alert('Modal has been closed.');
+          }}>
+          <View style={styles.modalContainer}>
+            <View style={styles.textItem}>
+              <Text style={styles.text}>Hello World!</Text>
+            </View>
+            <View style={styles.textItem}>
+              <Text style={styles.text}>Plant:   {selectedPlant.name}</Text>
+            </View>
+            <View style={styles.textItem}>
+              <Text style={styles.text}>Garden:   {selectedPlant.garden}</Text>
+            </View>
+            <View style={styles.textItem}>
+              <Text style={styles.text}>Grower:   {selectedPlant.grower}</Text>
+            </View>
+            <View style={styles.textItem}>
+              <Text style={styles.text}>
+                Planted <Moment element={Text} fromNow>{selectedPlant.timestamp}</Moment>
+              </Text>
+            </View>
+            <TouchableHighlight
+              style={{ marginTop: 50}}
+              onPress={ e => {
+                this.setModalHidden();
+              }}>
+              <Text style={{ fontSize: 16, color: '#42260A' }}>Hide Modal</Text>
+            </TouchableHighlight>
+          </View>
+        </Modal>
         <View style = {styles.imageContainer}>
           <Image
             source={{
@@ -131,9 +189,9 @@ class Location extends Component {
             {plantsSelected
             ? plantsList1.map((plant, index) => {
                 return (
-                  <View key={index} style={styles.gardenPlantTextBox}>
+                  <TouchableOpacity key={index} style={styles.gardenPlantTextBox} onPress={ e => this.setModalVisible(plant)}>
                     <Text key={index} style={styles.text}>{plant.name}</Text>
-                  </View>
+                  </TouchableOpacity>
                 )
               })
             :
@@ -154,26 +212,26 @@ class Location extends Component {
               {plantsSelected
               ? plantsList2.map((plant, index) => {
                   return (
-                    <View key={index} style={styles.gardenPlantTextBox}>
+                    <TouchableOpacity key={index} style={styles.gardenPlantTextBox} onPress={ e => this.setModalVisible(plant)}>
                       <Text key={index} style={styles.text}>{plant.name}</Text>
-                    </View>
+                    </TouchableOpacity>
                   )
                 })
               : (gardenSelected
                 ? selectedGarden.plants.map((plant, index) => {
                     return (
-                      <View key={index} style={styles.gardenPlantTextBox}>
+                      <TouchableOpacity key={index} style={styles.gardenPlantTextBox} onPress={ e => this.setModalVisible(plant)}>
                         <Text key={index} style={styles.text}>{plant.name}</Text>
-                      </View>
+                      </TouchableOpacity>
                     )
                   })
                 :
                   location.plants.map((plant, index) => {
-                    console.log(plant.name)
+                    //sconsole.log(plant)
                     return (
-                      <View key={index} style={styles.gardenPlantTextBox}>
+                      <TouchableOpacity key={index} style={styles.gardenPlantTextBox} onPress={ e => this.setModalVisible(plant)}>
                         <Text key={index} style={styles.text}>{plant.name}</Text>
-                      </View>
+                      </TouchableOpacity>
                     )
                   })
                 )
@@ -214,6 +272,15 @@ const styles = StyleSheet.create ({
       marginTop: 0,
       backgroundColor: '#2d882d',
       justifyContent: 'space-evenly',
+   },
+   modalContainer: {
+     flex: 1,
+     justifyContent: 'space-between',
+     alignItems: 'center',
+     marginTop: 52,
+     borderWidth: 2,
+     borderColor: my_light_green,
+     borderRadius: 12,
    },
    locationAddressContainer: {
       flex: 1,
@@ -260,8 +327,14 @@ const styles = StyleSheet.create ({
       margin: 2,
       backgroundColor: '#f0f4f0',
    },
+   textItem: {
+     margin: 20,
+     borderBottomWidth: 2,
+     borderColor: my_green,
+     borderRadius: 2,
+   },
    text: {
-      fontSize: 16,
+      fontSize: 18,
       color: '#42260A'
    }
 })
