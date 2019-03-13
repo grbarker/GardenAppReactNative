@@ -35,7 +35,7 @@ export default function auth(state = DEFAULT_STATE, action) {
             isLoggedIn: true,
             username: action.username,
             password: action.password,
-            token: action.data.token,
+            token: action.token,
             error: null
         };
       case FETCH_TOKEN_FAILURE:
@@ -45,7 +45,7 @@ export default function auth(state = DEFAULT_STATE, action) {
             username: '',
             password: '',
             token: '',
-            error: action.data.error
+            error: action.payload
         };
       default:
         return state;
