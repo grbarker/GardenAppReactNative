@@ -119,36 +119,6 @@ class Login extends Component {
             <ScrollView style={{padding: 20}}>
               <Text style={{fontSize: 27, color: my_green}}>{this.state.route}</Text>
               <LoginForm  onSubmit={this.loginSubmit} />
-                <Text style={{fontSize: 27, color: my_green}}>{this.state.route}</Text>
-                <TextInput
-                    style={styles.loginInputField}
-                    placeholder='Username'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    autoFocus={true}
-                    keyboardType='email-address'
-                    value={this.state.username}
-                    onChangeText={(text) => this.setState({ username: text })} />
-                  {error && <Text>{error}</Text>}
-                <TextInput
-                    style={styles.loginInputField}
-                    placeholder='Password'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    value={this.state.password}
-                    onChangeText={(text) => this.setState({ password: text })} />
-                <View style={{margin: 7}}/>
-                {(this.state.route === 'Login')
-                  ? <Button onPress={(e) => this.userLogin(e)} title={this.state.route}/>
-                  : <Button onPress={(e) => this.userSignup(e)} title={this.state.route}/>
-                }
-                <Text style={{fontSize: 16, color: 'blue'}} onPress={(e) => this.toggleRoute(e)}>{alt}</Text>
-                <TextButton style={{margin: 20}} onPress={this.toPublicHome}>
-                  Skip Login
-                </TextButton>
-                <View style={{height: 500}}>
-                </View>
             </ScrollView>
         );
     }
@@ -214,3 +184,36 @@ const styles = StyleSheet.create ({
    color: gray4
   }
 })
+
+
+  /*<Text style={{fontSize: 27, color: my_green}}>{this.state.route}</Text>
+  <TextInput
+      style={styles.loginInputField}
+      placeholder='Username'
+      autoCapitalize='none'
+      autoCorrect={false}
+      autoFocus={true}
+      keyboardType='email-address'
+      value={this.state.username}
+      onChangeText={(text) => this.setState({ username: text })} />
+    {error && <Text>{error}</Text>}
+  <TextInput
+      style={styles.loginInputField}
+      placeholder='Password'
+      autoCapitalize='none'
+      autoCorrect={false}
+      secureTextEntry={true}
+      value={this.state.password}
+      onChangeText={(text) => this.setState({ password: text })} />
+  <View style={{margin: 7}}/>
+  {(this.state.route === 'Login')
+    ? <Button onPress={(e) => this.userLogin(e)} title={this.state.route}/>
+    : <Button onPress={(e) => this.userSignup(e)} title={this.state.route}/>
+  }
+  <Text style={{fontSize: 16, color: 'blue'}} onPress={(e) => this.toggleRoute(e)}>{alt}</Text>
+  <TextButton style={{margin: 20}} onPress={this.toPublicHome}>
+    Skip Login
+  </TextButton>
+  <View style={{height: 500}}>
+  </View>*/
+  
