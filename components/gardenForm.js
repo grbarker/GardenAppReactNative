@@ -8,6 +8,7 @@ import { white, black, gray, purple, green, blue, my_green, my_blue, pink, light
 import { getUserGardens, submitUserGarden, submitUserGardenFetch, hideGardenInput } from '../actions/usergardens'
 import renderField from './renderField'
 import axios from 'axios';
+import gardenSubmit from './profile'
 
 
 
@@ -15,10 +16,10 @@ class GardenForm extends Component {
 
 
   render() {
-    const { handleSubmit, submitting, reset, pristine, data, style } = this.props
+    const { error, handleSubmit, submitting, reset, pristine, data, style } = this.props
 
     return (
-      <ScrollView onSubmit={handleSubmit}>
+      <ScrollView onSubmit={handleSubmit(gardenSubmit)}>
         <Field
           name="garden"
           type="text"
@@ -35,6 +36,7 @@ class GardenForm extends Component {
           placeholder="What is the address of your new garden?"
           style={style.reduxFormField}
         />
+        {error && <Text style={styles.errorText}>{error}</Text>}
         <View>
           <Button title='Submit' type="submit" disabled={pristine || submitting} onPress={handleSubmit}>
             Submit
@@ -61,23 +63,7 @@ GardenForm = reduxForm({
       ? 'Address field is required'
       :  undefined;
 
-    axios({
-      method: 'GET',
-      url: `https://maps.googleapis.com/maps/api/geocode/json?address=${values.address}&key=AIzaSyCyX0uZDxs4ekWQz-uSuhvhpABMOFf8QfI`,
-    }).then((response, errors) => {
-
-      //console.log(response.data.status);
-
-      if (response.data.status === "ZERO_RESULTS") {
-        errors.address = 'Invalid Address'
-        console.log('Invalid Address')
-        return errors
-      } else {
-        console.log('No Error')
-        return errors.address = undefined
-      }
-    })
-
+    
     return errors;
   }
 })(GardenForm);
@@ -103,6 +89,10 @@ const styles = StyleSheet.create ({
    text: {
      fontSize: 20,
       color: black
+   },
+   errorText: {
+    fontSize: 20,
+    color: red,
    },
    gardenInputField: {
      margin: 5,
