@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-//Get category
 export const FETCH_USER_PLANTS = 'FETCH_USER_PLANTS';
 export const FETCH_USER_PLANTS_SUCCESS = 'FETCH_USER_PLANTS_SUCCESS';
 export const FETCH_USER_PLANTS_FAILURE = 'FETCH_USER_PLANTS_FAILURE';
@@ -25,7 +24,7 @@ export function getUserPlants(dispatch, token, uri_end) {
     .then((response) => {
       (uri_end === '/api/user/plants')
       ? dispatch(getUserPlantsSuccess(response.data)) && console.log(response.data, 'GETTING FIRST SET OF PLANTS AGAIN AFTER A PLANT SUBMISSION')
-      : (dispatch(getMoreUserPlantsSuccess(response.data)) && console.log('GETTING MORE POSTS'))
+      : (dispatch(getMoreUserPlantsSuccess(response.data)) && console.log('GETTING MORE PLANTS'))
     })
     .catch(error => {
        dispatch(getMoreUserPlantsFailure(error)) && console.log(error)
