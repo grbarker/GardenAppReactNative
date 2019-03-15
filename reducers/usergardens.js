@@ -14,6 +14,7 @@ const INITIAL_STATE = {
   gardenChoice: {},
   gardenSuccessfull: false,
   error: null,
+  submitError: null,
   showingGardenInput: false
 }
 export default function usergardens(state = INITIAL_STATE, action) {
@@ -31,7 +32,8 @@ export default function usergardens(state = INITIAL_STATE, action) {
     case SUBMIT_USER_GARDEN_FAILURE:
       return {
         gardenSuccessfull: false,
-        error: action.payload
+        submitError: action.payload,
+        showingGardenInput: true
       };
     case FETCH_USER_GARDENS:
       return {
