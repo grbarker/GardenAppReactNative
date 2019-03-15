@@ -35,27 +35,6 @@ export function getUserGardens(dispatch, token, uri_end) {
 }
 
 
-export function submitUserGardenFetch(dispatch, token, gardenName) {
-  var uri = 'http://34.221.120.52/api/user/garden'
-  return function (dispatch)  {
-    console.log("Trying to DEBUG this fetch GARDEN request for submitting a user garden!!!", token, ", ", gardenText)
-    fetch(uri, {
-      method: 'POST',
-      headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
-      data: {
-        gardenText: gardenText
-      }
-    })
-    .then((response) => {
-      dispatch(submitUserGardenSuccess(response.data)) && console.log(response)
-      //dispatch(getGardens(dispatch, token, '/api/gardens'))
-    })
-    .catch(error => {
-       dispatch(submitUserGardenFailure(error.response.data)) && console.log('ERROR ! ! !', error.response.data) && console.log('response, ', response)
-    })
-    };
-}
-
 
 export function submitUserGarden(dispatch, token, gardenName, gardenAddress) {
   var uri = 'http://34.221.120.52/api/user/garden'
@@ -142,9 +121,9 @@ export function submitUserGardenSuccess(data) {
   };
 }
 
-export function submitUserGardenFailure(error) {
+export function submitUserGardenFailure(error_message) {
   return {
     type: SUBMIT_USER_GARDEN_FAILURE,
-    payload: error
+    payload: error_message
   };
 }
