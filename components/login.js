@@ -44,7 +44,11 @@ class Login extends Component {
       //console.log("Trying to DEBUG this axios POST request for submitting a LOGIN!!!", values.username, ", ", values.password)
       return axios({
         method: 'post',
-        url: `http://${values.username}:${values.password}@34.221.120.52/api/tokens`,
+        url: `http://34.221.120.52/api/tokens`,
+        auth: {
+          username: values.username,
+          password: values.password,
+        },
       })
       .then((response) => {
         //console.log('RESPONSE:  ', response);
@@ -58,7 +62,6 @@ class Login extends Component {
         dispatch(getTokenFailure(error.response.data.error))
         throw new SubmissionError({ _error: 'Incorrect Username or Password' })
       })
-      //dispatch(submitLogin(dispatch, values.username, values.password))
     }
 
     async userLogin (e) {
@@ -216,4 +219,3 @@ const styles = StyleSheet.create ({
   </TextButton>
   <View style={{height: 500}}>
   </View>*/
-  
