@@ -21,7 +21,10 @@ import {
   getUserPlants, getUserPlantsSuccess, getUserPlantsFailure,
   submitUserPlant, hidePlantInput, showPlantInput
 } from '../actions/userplants'
-import { submitUserGarden, hideGardenInput, showGardenInput, updatePicker } from '../actions/usergardens'
+import {
+  submitUserGarden, hideGardenInput, showGardenInput, updatePicker,
+  submitUserGardenFailure, getUserGardens
+} from '../actions/usergardens'
 import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
 import { showFollowers, hideFollowers } from '../actions/followers'
 import { showFollowed, hideFollowed } from '../actions/followed'
@@ -41,6 +44,7 @@ import { Ionicons } from '../node_modules/@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Icons from 'react-native-vector-icons/Ionicons'
 import Iconss from 'react-native-vector-icons/SimpleLineIcons'
+
 
 
 class Profile extends Component {
@@ -136,23 +140,38 @@ class Profile extends Component {
   gardenSubmit = (values) => {
     const { dispatch, token} = this.props
 
-    /*Note: The following request is disabled while troubleshooting error
+    //Note: The following request is disabled while troubleshooting error
     //handling on the gardenForm to keep from adding so many new gardens
-    axios({
-      method: 'GET',
-      url: `https://maps.googleapis.com/maps/api/geocode/json?address=${values.address}&key=AIzaSyCyX0uZDxs4ekWQz-uSuhvhpABMOFf8QfI`,
-    }).then((response) => {
-      if (response.data.status == "ZERO_RESULTS") {
-        throw new SubmissionError({
-          error: 'Invalid Address'
-        })
+    return axios({
+      method: 'POST',
+      url: `http://34.221.120.52/api/user/garden`,
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        "gardenName": values.garden,
+        "gardenAddress": values.address
       }
-      console.log(response.data.status);
-    })*/
+    })
+    .then((response) => {
+      console.log('RESPONSE     RESPONSE     RESPONSE', response)
+      dispatch(getUserGardens(dispatch, token, '/api/user/gardens'))
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log('ERROR RESPONSE! ! !', error.response.data.error)
+      console.log('ERROR MESSAGE! ! !', error.response.data.message)
+      //dispatch(submitUserGardenFailure(error.response.data.message));
+      //console.log('submitUserGardenFailure dispatched successfully ! ! !', error.response.data.message)
+      throw new SubmissionError({ _error: 'Invalid Address' });
+      console.log('SUBMISSION ERROR SUCCESS! ! !', error.response.data.message)
+
+    })
 
     //dispatch(submitUserGarden(dispatch, token, values.garden, values.address))
     // print the form values to the console
-    console.log(values);
+    //console.log('GARDEN FORM VALUES   ', values);
     }
 
   toMap = () => {
@@ -491,6 +510,10 @@ const styles = StyleSheet.create ({
     fontSize: 16,
     color: '#4f603c'
   },
+  errorText: {
+   fontSize: 20,
+   color: red,
+ },
   profileText: {
     fontSize: 24,
     color: my_green
@@ -501,7 +524,6 @@ const styles = StyleSheet.create ({
     backgroundColor: '#f0f4f0',
     borderWidth: 2,
     borderColor: my_green,
-
   }
 })
 
