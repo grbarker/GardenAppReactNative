@@ -16,6 +16,7 @@ export function getPlants(dispatch, token, uri) {
       headers: {Authorization: `Bearer ${token}`}
     })
     .then((response) => {
+      console.log(reponse)
       dispatch(getPlantsSuccess(response.data)) && console.log(response.data)
     })
     .catch(error => {
@@ -41,20 +42,5 @@ export function getPlantsFailure(data) {
   return {
     type: FETCH_PLANTS_FAILURE,
     payload: data.error
-  };
-}
-
-
-
-export function getPlantsOldWayThatDidntWork(dispatch, token, uri) {
-  const request = axios({
-    method: 'get',
-    url: `${api}`,
-    headers: {Authorization: `Bearer ${token}`}
-  });
-
-  return {
-    type: FETCH_PLANTS,
-    payload: request
   };
 }
