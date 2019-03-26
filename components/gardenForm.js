@@ -7,16 +7,29 @@ import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
 import { getUserGardens, submitUserGarden, submitUserGardenFetch, hideGardenInput } from '../actions/usergardens'
 import renderField from './renderField'
+import renderPredeterminedField from './renderPredeterminedField'
 import axios from 'axios';
 import gardenSubmit from './profile'
 
 
 
 class GardenForm extends Component {
+  static navigationOptions = ({ navigation }) => {
 
+  }
+
+  toPlacingMap = (navigation) => {
+    navigation.navigate('Map',
+      {placingGarden: true}
+    );
+  }
 
   render() {
-    const { error, handleSubmit, submitting, reset, pristine, data, style } = this.props
+    const { error, handleSubmit, submitting, reset, pristine, data, style, navigation } = this.props
+    //The following log causes a massive tide of warnings about reusing an
+    //event or something when navigating back from addressCheck component
+    //console.log(this.props)
+    console.log("THIS IS WHERE THE ADDRESS DATA IS SUPPOSE TO BE PASSED  ----  ", data)
 
     return (
       <ScrollView onSubmit={handleSubmit(gardenSubmit)}>
@@ -28,16 +41,31 @@ class GardenForm extends Component {
           placeholder="What is the name of your new garden?"
           style={style.reduxFormField}
         />
-        <Field
-          name="address"
-          type="text"
-          component={renderField}
-          label="Address"
-          placeholder="What is the address of your new garden?"
-          style={style.reduxFormField}
-        />
+        {data
+          ? <Field
+              name="address"
+              type="text"
+              component={renderPredeterminedField}
+              label="Address"
+              placeholder="What is the address of your new garden?"
+              data={data}
+              style={style.reduxFormField}
+            />
+          : <Field
+              name="address"
+              type="text"
+              component={renderField}
+              label="Address"
+              placeholder="What is the address of your new garden?"
+              style={style.reduxFormField}
+            />
+        }
+
         {error && <Text style={styles.errorText}>{error}</Text>}
         <View>
+          <Button title='Choose on map' type="button"  onPress={() => {this.toPlacingMap(navigation) && reset}}>
+            Place on map
+          </Button>
           <Button title='Submit' type="submit" disabled={pristine || submitting} onPress={handleSubmit}>
             Submit
           </Button>
@@ -61,9 +89,9 @@ GardenForm = reduxForm({
 
     errors.address = !values.address
       ? 'Address field is required'
-      :  undefined;
+      :  console.log(values.address);
 
-    
+
     return errors;
   }
 })(GardenForm);
