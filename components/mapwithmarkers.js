@@ -3,11 +3,13 @@ import { ScrollView, ListView, View, Text, TouchableOpacity, StyleSheet, Button 
 import { Callout } from 'react-native-maps';
 import { MapView, Marker } from 'expo';
 import { connect } from 'react-redux'
-import { white, grey, my_blue, purple } from '../utils/colors'
+import { white, grey, my_green, my_blue, purple } from '../utils/colors'
 import { LocationInfo } from './location_info'
 import CalloutView from './marker_callout'
 import { getLocationsSuccess, getLocationsFailure, getOwnLocation, getOwnLocationDenied } from '../actions/locations'
+import { getAddresses, getAddressesSuccess, getAddressesFailure } from '../actions/map'
 import { Constants, Location, Permissions } from 'expo';
+import axios from 'axios';
 
 class Map extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -32,7 +34,6 @@ class Map extends Component {
   alertMarkerInfo = (location) => {
    alert(location.address)
   }
-
   alertCalloutPress = () => {
    alert("Callout Has Been Pressed!!!")
   }
@@ -43,15 +44,47 @@ class Map extends Component {
      selectedLocation: location
    })
   }
-
-  closeInfoWindow = (location) => {
+  closeInfoWindow = (event) => {
     const { infoWindowOpen } = this.state
     if (infoWindowOpen) {
       this.setState({
        infoWindowOpen: false,
        selectedLocation: null
      })
-    }
+   } else {
+     console.log(event.nativeEvent.coordinate)
+   }
+  }
+
+  checkCoords = (event) => {
+    const { navigation, dispatch, token } = this.props
+
+    console.log(event.nativeEvent.coordinate)
+    console.log(event.nativeEvent.coordinate.latitude)
+    console.log(event.nativeEvent.coordinate.longitude)
+    return axios({
+      method: 'POST',
+      url: `http://34.221.120.52/api/user/reverse_geocode`,
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        "lat": event.nativeEvent.coordinate.latitude,
+        "lon": event.nativeEvent.coordinate.longitude
+      }
+    })
+    .then((response) => {
+      console.log('RESPONSE     RESPONSE     RESPONSE', response.data.results)
+      dispatch(getAddressesSuccess(response.data.results))
+      this.props.navigation.navigate('AddressCheck');
+      console.log('REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL')
+    })
+    .catch(error => {
+      console.log('ERROR RESPONSE! ! !', error.response)
+      dispatch(getAddressesFailure(error.response.data.error))
+
+    })
   }
 
   toLocation = (location) => {
@@ -69,10 +102,7 @@ class Map extends Component {
     let ownLocationObj = await Location.getCurrentPositionAsync({});
     dispatch(getOwnLocation(ownLocationObj))
     this.setState({ ownLocation: ownLocationObj });
-    console.log(
-      `Suppposed to show the phone location has passed to the store right`, globalState.locations)
   };
-
   _getLocation = () => {
     const { dispatch, ownLocation } = this.props
     let { status } = Permissions.askAsync(Permissions.LOCATION);
@@ -91,11 +121,6 @@ class Map extends Component {
     const { coords } = this.state.ownLocation
     var newLat = coords.latitude + 1
     var newLng = coords.longitude + 1
-  }
-
-  componentDidMount() {
-    this.fetchMarkerData();
-    this._getLocationAsync();
   }
 
   async fetchMarkerData() {
@@ -121,16 +146,26 @@ class Map extends Component {
     }
   }
 
+  componentDidMount() {
+    //const { placingGarden } = this.prop
+
+    console.log(this.props.navigation)
+    console.log(this.props.navigation.state.params)
+    //console.log(placingGarden)
+    this.fetchMarkerData();
+    this._getLocationAsync();
+  }
+
 
   render() {
-    const { fetched, locations, globalState } = this.props
+    const { fetched, locations, globalState, navigation, addresses } = this.props
     const { ownLocation } = this.state
     //console.log('Own Location In Render Function', ownLocation)
     {(ownLocation !== null)
       ? console.log('Coords', ownLocation.coords)
       : null
-    }
-    //console.log(ownLocation.coords.longitude)
+    }    //console.log(ownLocation.coords.longitude)
+    console.log(navigation.state.params)
 
     return (
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -142,41 +177,43 @@ class Map extends Component {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
               }}
-              onPress={e => this.closeInfoWindow()}
+              onPress={ (event) => this.checkCoords(event) }
             >
-            {fetched
+            {navigation.state.params.placingGarden
               ? null
-              : (locations.map((location, index) => {
-                  //console.log(index, location);
-                  //console.log(index, ": INDEX");
-                  const coord = { latitude: location.latitude, longitude: location.longitude };
-                  const metadata = `Status: ${location.statusValue}`;
-                  //console.log('coord: ', coord);
-                  const gardens = location.gardens.toString();
+              : (locations
+                  ? (locations.map((location, index) => {
+                      //console.log(index, location);
+                      //console.log(index, ": INDEX");
+                      const coord = { latitude: location.latitude, longitude: location.longitude };
+                      const metadata = `Status: ${location.statusValue}`;
+                      //console.log('coord: ', coord);
+                      const gardens = location.gardens.toString();
 
-                  return (
-                    <MapView.Marker
-                      key={index}
-                      coordinate={coord}
-                      title={location.address}
-                      description={gardens}
-                      image={require('../utils/img/rose64px.png')}
-                      onCalloutPress={() => {
-                        this.props.navigation.navigate('Location', { location })
-                        }
-                      }
-                    >
-                      <Callout style={{padding: 0, }}>
-                        <CalloutView location={location} />
-                      </Callout>
-                    </MapView.Marker>
-                  );
-                }))
-              }
+                      return (
+                        <MapView.Marker
+                          key={index}
+                          coordinate={coord}
+                          title={location.address}
+                          description={gardens}
+                          image={require('../utils/img/rose64px.png')}
+                          onCalloutPress={() => {
+                            this.props.navigation.navigate('Location', { location })
+                            }
+                          }
+                        >
+                          <Callout style={{padding: 0, }}>
+                            <CalloutView location={location} />
+                          </Callout>
+                        </MapView.Marker>
+                      );
+                    }))
+                  : null
+                )
+            }
         </MapView>
         : null
       }
-
       </View>
     );
   }
@@ -188,6 +225,7 @@ const mapStateToProps = (state, ownProps) => {
       locations: state.locations.items,
       storeOwnLocation: state.locations.ownLocation,
       globalState: state,
+      addresses: state.map.addresses
     };
 }
 
