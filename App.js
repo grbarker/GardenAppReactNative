@@ -13,6 +13,7 @@ import Home from './components/home2'
 import Map from './components/mapwithmarkers'
 import Profile from './components/profile'
 import Location from './components/location'
+import AddressCheck from './components/addressCheck'
 
 function UdaciStatusBar ({backgroundColor, ...props}) {
   return (
@@ -73,6 +74,15 @@ const MainNavigator = createStackNavigator({
   },
   Location: {
     screen: Location,
+    navigationOptions: {
+      headerTintColor: white,
+      headerStyle: {
+        backgroundColor: my_green,
+      }
+    }
+  },
+  AddressCheck: {
+    screen: AddressCheck,
     navigationOptions: {
       headerTintColor: white,
       headerStyle: {
