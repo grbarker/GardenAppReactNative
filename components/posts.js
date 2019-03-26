@@ -46,7 +46,7 @@ class Posts extends Component {
       //console.log('FIRST API CALL RESPONSEJSON....', responseJSON)
       dispatch(getPostsSuccess(responseJSON))
     } catch (error) {
-      console.error(error);
+      console.error(error.response);
     }
   }
 
