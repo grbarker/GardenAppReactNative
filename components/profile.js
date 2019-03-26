@@ -175,7 +175,9 @@ class Profile extends Component {
     }
 
   toMap = () => {
-    this.props.navigation.navigate('Map');
+    this.props.navigation.navigate('Map',
+      {placingGarden: false}
+    );
   }
   toHome = () => {
     this.props.navigation.navigate('Home');
@@ -221,9 +223,13 @@ class Profile extends Component {
     const { dispatch, user, fetching, fetched_user, showingFollowers,
       showingFollowed, showingPlantInput, showingGardenInput, showingPostInput,
       followers, length,fetched_usergardens, usergarden_items, gardenChoice,
-      addressError
+      addressError, navigation, address
     } = this.props
     const { selectedGarden, gardenName, gardenID } = this.state
+    //console.log(this.props)
+    //const { address } = this.props.navigation.state.params
+    address && console.log('CHECKING IF ADDRESS IS ACCESSIBLE ON RETURN TO PROFILE  ', address)
+    console.log('IS GARDEN INPUT SHOWING -- ', showingGardenInput)
 
     if (fetched_user == true) {
       //console.log('User', user)
@@ -350,9 +356,12 @@ class Profile extends Component {
                 ? <PlantForm onSubmit={this.plantSubmit} style={styles} data={usergarden_items}/>
                 : null
               }
-              {showingGardenInput == true
-                ? <GardenForm onSubmit={this.gardenSubmit} style={styles} />
-                : null
+              {showingGardenInput != true
+                ? null
+                : (address
+                    ? <GardenForm onSubmit={this.gardenSubmit} style={styles} navigation={navigation} data={address} />
+                    : <GardenForm onSubmit={this.gardenSubmit} style={styles} navigation={navigation} />
+                  )
               }
               </View>
               <View>
@@ -397,6 +406,7 @@ const mapStateToProps = (state, ownProps) => {
       plant_items: state.userplants.items,
       usergarden_items: state.usergardens.items,
       gardenChoice: state.usergardens.gardenChoice,
+      address: state.map.address,
       addressError: state.usergardens.error,
       token: state.auth.token,
       showingFollowers: state.followers.showingFollowers,
