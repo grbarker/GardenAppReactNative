@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
 import TextButton from './TextButton'
 import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
@@ -68,9 +68,10 @@ class Home extends Component {
     console.log(values);
     }
 
-
   toMap = () => {
-    this.props.navigation.navigate('Map');
+    this.props.navigation.navigate('Map',
+      {placingGarden: false}
+    );
   }
 
   toProfile = () => {
@@ -78,7 +79,6 @@ class Home extends Component {
       { user: null }
     );
   }
-
 
   _getLocationAsync = async () => {
   let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -187,7 +187,7 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps)(Home);
 
 const styles = StyleSheet.create ({
-   container: {
+  container: {
     flex: 1,
     justifyContent: 'flex-start',
     padding: 5,
@@ -195,10 +195,10 @@ const styles = StyleSheet.create ({
     backgroundColor: '#f0f4f0',
     alignItems: 'center',
    },
-    scrollViewContainer: {
+  scrollViewContainer: {
       width: '100%'
     },
-   iconButtonsContainer: {
+  iconButtonsContainer: {
      maxHeight: 50,
      width: '100%',
      flex: 1,
@@ -207,21 +207,21 @@ const styles = StyleSheet.create ({
      borderBottomWidth: 3,
      borderColor: my_green,
    },
-   myGreenTextButton: {
+  myGreenTextButton: {
      margin: 5,
      padding: 5,
      borderColor: my_green,
      borderWidth: 2,
      borderRadius: 5
    },
-   newposticon: {
+  newposticon: {
      marginLeft: 10,
    },
-   profileText: {
+  profileText: {
      fontSize: 24,
      color: my_green
    },
-   text: {
+  text: {
      fontSize: 20,
       color: black
    }
