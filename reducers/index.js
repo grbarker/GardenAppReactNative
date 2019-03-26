@@ -9,6 +9,7 @@ import userposts from './userposts.js';
 import userplants from './userplants.js';
 import locations from './locations.js';
 import usergardens from './usergardens.js';
+import map from './map.js';
 import { reducer as formReducer } from 'redux-form'
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   userplants, //<--UserPlants
   locations, //<--Locations
   usergardens, //<-- UserGardens
+  map, //<-- Map
   form: formReducer, //<--PlantForm
 });
 
