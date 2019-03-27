@@ -59,9 +59,9 @@ class Map extends Component {
   checkCoords = (event) => {
     const { navigation, dispatch, token } = this.props
 
-    console.log(event.nativeEvent.coordinate)
-    console.log(event.nativeEvent.coordinate.latitude)
-    console.log(event.nativeEvent.coordinate.longitude)
+    //console.log(event.nativeEvent.coordinate)
+    //console.log(event.nativeEvent.coordinate.latitude)
+    //console.log(event.nativeEvent.coordinate.longitude)
     return axios({
       method: 'POST',
       url: `http://34.221.120.52/api/user/reverse_geocode`,
@@ -75,13 +75,13 @@ class Map extends Component {
       }
     })
     .then((response) => {
-      console.log('RESPONSE     RESPONSE     RESPONSE', response.data.results)
+      //console.log('RESPONSE     RESPONSE     RESPONSE', response.data.results)
       dispatch(getAddressesSuccess(response.data.results))
       this.props.navigation.navigate('AddressCheck');
-      console.log('REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL')
+      //console.log('REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL REDIRECT SUCCESSFULL')
     })
     .catch(error => {
-      console.log('ERROR RESPONSE! ! !', error.response)
+      //console.log('ERROR RESPONSE! ! !', error.response)
       dispatch(getAddressesFailure(error.response.data.error))
 
     })
@@ -149,8 +149,8 @@ class Map extends Component {
   componentDidMount() {
     //const { placingGarden } = this.prop
 
-    console.log(this.props.navigation)
-    console.log(this.props.navigation.state.params)
+    //console.log('this.props.navigation : ', this.props.navigation)
+    //console.log('this.props.navigation.state.params: ', this.props.navigation.state.params)
     //console.log(placingGarden)
     this.fetchMarkerData();
     this._getLocationAsync();
@@ -161,11 +161,13 @@ class Map extends Component {
     const { fetched, locations, globalState, navigation, addresses } = this.props
     const { ownLocation } = this.state
     //console.log('Own Location In Render Function', ownLocation)
-    {(ownLocation !== null)
-      ? console.log('Coords', ownLocation.coords)
+    /*{(ownLocation !== null)
+      ? console.log('Coords: ', ownLocation.coords)
       : null
-    }    //console.log(ownLocation.coords.longitude)
-    console.log(navigation.state.params)
+    } */
+    //console.log(ownLocation.coords.longitude)
+    //console.log('navigation.state.params in RENDER: ', navigation.state.params)
+    //console.log('-- IS THIS THE PLACING MAP -- IS THIS THE PLACING MAP -- ',  placingMap)
 
     return (
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
