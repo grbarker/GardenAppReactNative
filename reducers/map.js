@@ -1,10 +1,9 @@
-import { FETCH_ADDRESSES, FETCH_ADDRESSES_SUCCESS, FETCH_ADDRESSES_FAILURE, SET_ADDRESS } from '../actions/map'
+import { FETCH_ADDRESSES, FETCH_ADDRESSES_SUCCESS, FETCH_ADDRESSES_FAILURE } from '../actions/map'
 
 const INITIAL_STATE = {
   fetching: false,
   fetched: false,
   addresses: [],
-  address: null,
   error: null,
 }
 export default function map(state = INITIAL_STATE, action) {
@@ -29,11 +28,6 @@ export default function map(state = INITIAL_STATE, action) {
         fetched: false,
         error: action.payload
       };
-        case SET_ADDRESS:
-          return {
-            ...state,
-            address: action.payload,
-          };
     default :
       return state
   }
