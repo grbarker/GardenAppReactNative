@@ -32,7 +32,7 @@ class Posts extends Component {
 
   async componentDidMount() {
     const { dispatch, token, page } = this.props
-    console.log(page);
+    //console.log(page);
     try {
       let response = await fetch(
         `http://34.221.120.52/api/posts`, {
@@ -59,7 +59,7 @@ class Posts extends Component {
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of posts.")
     if (fetched_posts == true) {
-      console.log(page);
+      //console.log(page);
       let uri = '/api/posts'
       //console.log("Here are the links!.....", links.next)
       if (links.next) {

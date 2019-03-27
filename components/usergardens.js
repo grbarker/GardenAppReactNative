@@ -31,7 +31,7 @@ class UserGardens extends Component {
 
   async componentDidMount() {
     const { dispatch, token, user } = this.props
-    console.log(user)
+    //console.log(user)
     try {
       let response = await fetch(
         `http://34.221.120.52/api/user/gardens`, {
