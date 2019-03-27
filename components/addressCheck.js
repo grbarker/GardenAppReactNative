@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { change } from 'redux-form'
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native'
 import TextButton from './TextButton'
 import AlteredTextButton from './AlteredTextButton'
@@ -41,16 +42,16 @@ class AddressCheck extends Component {
 
   toProfileWithAddress = (address) => {
     const { dispatch } = this.props
-
-    dispatch(setAddress(address))
-    this.props.navigation.navigate('Profile');
+    dispatch(change('garden', 'address', address))
+    console.log(address)
+    this.props.navigation.navigate('Profile')
     console.log(address)
   }
 
   render() {
     const { showingPostInput, navigation, addresses } = this.props
 
-    console.log(addresses)
+    //console.log(addresses)
 
     return (
       <ScrollView contentContainerStyle={styles.viewContainer}>
