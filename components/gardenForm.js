@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm, actions, change } from 'redux-form'
 import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Button } from 'react-native'
 import TextButton from './TextButton'
 import 'moment-timezone';
@@ -24,12 +24,12 @@ class GardenForm extends Component {
     );
   }
 
+
   render() {
-    const { error, handleSubmit, submitting, reset, pristine, data, style, navigation } = this.props
+    const { error, handleSubmit, submitting, reset, pristine, style, navigation } = this.props
     //The following log causes a massive tide of warnings about reusing an
     //event or something when navigating back from addressCheck component
     //console.log(this.props)
-    console.log("THIS IS WHERE THE ADDRESS DATA IS SUPPOSE TO BE PASSED  ----  ", data)
 
     return (
       <ScrollView onSubmit={handleSubmit(gardenSubmit)}>
@@ -41,25 +41,14 @@ class GardenForm extends Component {
           placeholder="What is the name of your new garden?"
           style={style.reduxFormField}
         />
-        {data
-          ? <Field
-              name="address"
-              type="text"
-              component={renderPredeterminedField}
-              label="Address"
-              placeholder="What is the address of your new garden?"
-              data={data}
-              style={style.reduxFormField}
-            />
-          : <Field
-              name="address"
-              type="text"
-              component={renderField}
-              label="Address"
-              placeholder="What is the address of your new garden?"
-              style={style.reduxFormField}
-            />
-        }
+        <Field
+          name="address"
+          type="text"
+          component={renderField}
+          label="Address"
+          placeholder="What is the address of your new garden?"
+          style={style.reduxFormField}
+        />
 
         {error && <Text style={styles.errorText}>{error}</Text>}
         <View>
@@ -77,6 +66,7 @@ class GardenForm extends Component {
     )
   }
 }
+
 
 
 GardenForm = reduxForm({
