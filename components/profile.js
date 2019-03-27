@@ -81,7 +81,7 @@ class Profile extends Component {
         }
       );
       let responseJSON = await response.json();
-      console.log(responseJSON)
+      //console.log(responseJSON)
       dispatch(getUserSuccess(responseJSON))
     } catch (error) {
       console.error(error);
@@ -110,7 +110,7 @@ class Profile extends Component {
     const { dispatch, token, gardenChoice } = this.props
     const { user } = this.props.navigation.state.params
     console.log('PROFILE   ', token);
-    (user) ? (this.fetchUser(user) && console.log(user)) : (this.fetchCurrentUser() && console.log('No User'))
+    (user) ? (this.fetchUser(user) && console.log(user)) : (this.fetchCurrentUser() && console.log('Current User'))
     this.setState({
       selectedGarden: gardenChoice,
       gardenName: gardenChoice.name,
@@ -223,13 +223,14 @@ class Profile extends Component {
     const { dispatch, user, fetching, fetched_user, showingFollowers,
       showingFollowed, showingPlantInput, showingGardenInput, showingPostInput,
       followers, length,fetched_usergardens, usergarden_items, gardenChoice,
-      addressError, navigation, address
+      addressError, navigation, address, state
     } = this.props
     const { selectedGarden, gardenName, gardenID } = this.state
     //console.log(this.props)
     //const { address } = this.props.navigation.state.params
-    address && console.log('CHECKING IF ADDRESS IS ACCESSIBLE ON RETURN TO PROFILE  ', address)
-    console.log('IS GARDEN INPUT SHOWING -- ', showingGardenInput)
+    //address && console.log('CHECKING IF ADDRESS IS ACCESSIBLE ON RETURN TO PROFILE  ', address)
+    //console.log('IS GARDEN INPUT SHOWING -- ', showingGardenInput)
+    //console.log('SHOWING -- FORM -- STATE -- SHOWING -- FORM -- STATE -- SHOWING -- FORM -- STATE ', state.form)
 
     if (fetched_user == true) {
       //console.log('User', user)
@@ -356,12 +357,9 @@ class Profile extends Component {
                 ? <PlantForm onSubmit={this.plantSubmit} style={styles} data={usergarden_items}/>
                 : null
               }
-              {showingGardenInput != true
-                ? null
-                : (address
-                    ? <GardenForm onSubmit={this.gardenSubmit} style={styles} navigation={navigation} data={address} />
-                    : <GardenForm onSubmit={this.gardenSubmit} style={styles} navigation={navigation} />
-                  )
+              {showingGardenInput == true
+                ? <GardenForm onSubmit={this.gardenSubmit} style={styles} navigation={navigation} />
+                : null
               }
               </View>
               <View>
@@ -416,6 +414,7 @@ const mapStateToProps = (state, ownProps) => {
       showingGardenInput: state.usergardens.showingGardenInput,
       followers: state.followers,
       length: state.followers.items.length,
+      state: state,
 
     };
 }
