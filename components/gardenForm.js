@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
 import { getUserGardens, submitUserGarden, submitUserGardenFetch, hideGardenInput } from '../actions/usergardens'
 import renderField from './renderField'
-import renderPredeterminedField from './renderPredeterminedField'
 import axios from 'axios';
 import gardenSubmit from './profile'
 
