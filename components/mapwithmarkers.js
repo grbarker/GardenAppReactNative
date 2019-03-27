@@ -158,7 +158,7 @@ class Map extends Component {
 
 
   render() {
-    const { fetched, locations, globalState, navigation, addresses } = this.props
+    const { fetched, locations, globalState, navigation, addresses, placingMap } = this.props
     const { ownLocation } = this.state
     //console.log('Own Location In Render Function', ownLocation)
     /*{(ownLocation !== null)
@@ -181,7 +181,7 @@ class Map extends Component {
               }}
               onPress={ (event) => this.checkCoords(event) }
             >
-            {navigation.state.params.placingGarden
+            {(placingMap == true || placingMap == undefined)
               ? null
               : (locations
                   ? (locations.map((location, index) => {
@@ -227,7 +227,8 @@ const mapStateToProps = (state, ownProps) => {
       locations: state.locations.items,
       storeOwnLocation: state.locations.ownLocation,
       globalState: state,
-      addresses: state.map.addresses
+      addresses: state.map.addresses,
+      placingMap: state.map.placingMap,
     };
 }
 

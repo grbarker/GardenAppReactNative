@@ -6,6 +6,7 @@ import 'moment-timezone';
 import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
 import { getUserGardens, submitUserGarden, submitUserGardenFetch, hideGardenInput } from '../actions/usergardens'
+import { toPlacingMap } from '../actions/map'
 import renderField from './renderField'
 import axios from 'axios';
 import gardenSubmit from './profile'
@@ -18,9 +19,10 @@ class GardenForm extends Component {
   }
 
   toPlacingMap = (navigation) => {
-    navigation.navigate('Map',
-      {placingGarden: true}
-    );
+    const { dispatch } = this.props
+
+    dispatch(toPlacingMap())
+    navigation.navigate('Map');
   }
 
 
@@ -65,7 +67,6 @@ class GardenForm extends Component {
     )
   }
 }
-
 
 
 GardenForm = reduxForm({
