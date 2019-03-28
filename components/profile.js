@@ -25,7 +25,7 @@ import {
   submitUserGarden, hideGardenInput, showGardenInput, updatePicker,
   submitUserGardenFailure, getUserGardens
 } from '../actions/usergardens'
-import { getUser, getUserSuccess, getUserFailure } from '../actions/user'
+import { getUser, getUserSuccess, getUserFailure, getOtherUserSuccess } from '../actions/user'
 import { showFollowers, hideFollowers } from '../actions/followers'
 import { showFollowed, hideFollowed } from '../actions/followed'
 import PostInput from './postInput'
@@ -87,11 +87,11 @@ class Profile extends Component {
       console.error(error);
     }
   }
-  async fetchUser(user){
+  async fetchUser(id){
     const { dispatch, token } = this.props
     try {
       let response = await fetch(
-        `http://@34.221.120.52/api/users/${user.id}`, {
+        `http://@34.221.120.52/api/users/${id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,18 +99,18 @@ class Profile extends Component {
         }
       );
       let responseJSON = await response.json();
-      //console.log(responseJSON)
-      dispatch(getUserSuccess(responseJSON))
+      console.log(responseJSON)
+      dispatch(getOtherUserSuccess(responseJSON))
     } catch (error) {
       console.error(error);
     }
   }
 
   componentDidMount() {
-    const { dispatch, token, gardenChoice } = this.props
-    const { user } = this.props.navigation.state.params
+    const { dispatch, token, gardenChoice, otherUserBool, otherUserID, showCurrentUser } = this.props
     console.log('PROFILE   ', token);
-    (user) ? (this.fetchUser(user) && console.log(user)) : (this.fetchCurrentUser() && console.log('Current User'))
+    console.log('ARE WE SHOWING THE CURRENT USER ---> ', showCurrentUser);
+    (showCurrentUser) ? (this.fetchCurrentUser() && console.log('Current User')) : (this.fetchUser(otherUserID) && console.log('Other User --> user id --> ', otherUserID))
     this.setState({
       selectedGarden: gardenChoice,
       gardenName: gardenChoice.name,
@@ -223,7 +223,8 @@ class Profile extends Component {
     const { dispatch, user, fetching, fetched_user, showingFollowers,
       showingFollowed, showingPlantInput, showingGardenInput, showingPostInput,
       followers, length,fetched_usergardens, usergarden_items, gardenChoice,
-      addressError, navigation, address, state
+      addressError, navigation, address, state, otherUserBool, otherFetched,
+      otherUser, showCurrentUser
     } = this.props
     const { selectedGarden, gardenName, gardenID } = this.state
     //console.log(this.props)
@@ -232,13 +233,19 @@ class Profile extends Component {
     //console.log('IS GARDEN INPUT SHOWING -- ', showingGardenInput)
     //console.log('SHOWING -- FORM -- STATE -- SHOWING -- FORM -- STATE -- SHOWING -- FORM -- STATE ', state.form)
 
-    if (fetched_user == true) {
+    if (fetched_user == true || otherFetched == true) {
       //console.log('User', user)
       //console.log('Avatar', user._links['avatar'])
       // console.log("Showing Followers?", showingFollowers)
       // console.log("Showing Followed?", showingFollowed)
       //console.log('Followers', followers, length)
-      let imgSrc = user._links['avatar'];
+      fetched_user && console.log('----CURRENT-USER----CURRENT-USER----', user)
+      console.log('LOGGING FETCHED CURRENT USER----CURRENT USER----CURRENT USER-------------', fetched_user)
+      console.log('LOGGING FETCHED OTHER USER----OTHER USER----OTHER USER----------', otherFetched)
+      otherFetched && console.log('OTHER USER----OTHER USER    ', otherUser)
+      let imageSrc = (otherUserBool == true) ? otherUser._links['avatar'] : user._links['avatar'];
+      let selectedUser = (otherUserBool == true) ? otherUser: user;
+      //let imgSrc = user._links['avatar'];
       return (
         <View>
           <MapView
@@ -255,24 +262,24 @@ class Profile extends Component {
                 <View style = {styles.avatarContainer}>
                   <Image
                     style={{width: 110, height: 110}}
-                    source={{uri: imgSrc}}
+                    source={{uri: imageSrc}}
                   />
                 </View>
                 <View style = {styles.profileInfoContainer}>
-                  <Text style = {styles.profileText}>{user.username}</Text>
+                  <Text style = {styles.profileText}>{selectedUser.username}</Text>
                   <Text style = {styles.text}>
                     <AlteredTextButton onPress={this.toggleFollowed}>
-                      Following: {user.followed_count}
+                      Following: {selectedUser.followed_count}
                     </AlteredTextButton>
                   </Text>
                   <Text style = {styles.text}>
                     <AlteredTextButton onPress={this.toggleFollowers}>
-                      Followers: {user.follower_count}
+                      Followers: {selectedUser.follower_count}
                     </AlteredTextButton>
                   </Text>
-                  <Text style = {styles.text}>{user.post_count} posts</Text>
+                  <Text style = {styles.text}>{selectedUser.post_count} posts</Text>
                   <Text style = {styles.text}>
-                    Last seen <Moment element={Text} fromNow>{user.last_seen}</Moment>
+                    Last seen <Moment element={Text} fromNow>{selectedUser.last_seen}</Moment>
                   </Text>
                 </View>
               </View>
@@ -375,8 +382,8 @@ class Profile extends Component {
                     </View>
                   : null
                 }
-                <UserGardens />
                 <UserPlants />
+                <UserGardens />
                 <UserPosts />
               </View>
             </View>
@@ -399,7 +406,12 @@ const mapStateToProps = (state, ownProps) => {
       fetched_posts: state.userposts.fetched,
       fetched_plants: state.userplants.fetched,
       fetched_usergardens: state.usergardens.fetched,
+      showCurrentUser: state.user.showCurrentUser,
       user: state.user.user,
+      otherUserBool: state.user.otherUserBool,
+      otherUserID: state.user.otherUserID,
+      otherFetched: state.user.otherFetched,
+      otherUser: state.user.otherUser,
       post_items: state.userposts.items,
       plant_items: state.userplants.items,
       usergarden_items: state.usergardens.items,
