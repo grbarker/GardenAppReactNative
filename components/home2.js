@@ -7,9 +7,8 @@ import 'moment-timezone';
 import { MapView } from 'expo';
 import { connect } from 'react-redux'
 import { white, black, gray, purple, green, blue, my_green, my_blue, pink, lightPurp, red, orange} from '../utils/colors'
-import {
-  submitUserPost, hidePostInput, showPostInput
-} from '../actions/posts'
+import { submitUserPost, hidePostInput, showPostInput } from '../actions/posts'
+import { setCurrentUser } from '../actions/user'
 import Posts  from './posts'
 import Plants from './plants'
 import PostInput from './postInput'
@@ -18,6 +17,7 @@ import { Constants, Location, Permissions } from 'expo';
 import { Ionicons } from '../node_modules/@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Icons from 'react-native-vector-icons/Ionicons'
+
 
 class Home extends Component {
 
@@ -75,9 +75,9 @@ class Home extends Component {
   }
 
   toProfile = () => {
-    this.props.navigation.navigate('Profile',
-      { user: null }
-    );
+    const { dispatch } = this.props
+    dispatch(setCurrentUser())
+    this.props.navigation.navigate('Profile');
   }
 
   _getLocationAsync = async () => {
@@ -97,7 +97,7 @@ class Home extends Component {
 
 
   render() {
-    const { showingPostInput } = this.props
+    const { showingPostInput, navigation } = this.props
     return (
       <View style={styles.container}>
         <View style={styles.iconButtonsContainer}>
@@ -167,8 +167,8 @@ class Home extends Component {
             }
             </View>
           <View>
+            <Plants navigation={navigation}/>
             <Posts />
-            <Plants />
           </View>
         </ScrollView>
       </View>
