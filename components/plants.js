@@ -4,17 +4,42 @@ import AlteredTextButton from './AlteredTextButton'
 import Moment from 'react-moment';
 import 'moment-timezone';
 import { connect } from 'react-redux'
+import axios from 'axios';
 import {
   white, my_green, green, gray, red, purple, orange, blue, my_blue,
   lightPurp, black, pink, gray4
 } from '../utils/colors'
-import { getPlants, lessPlants, getPlantsSuccess, getPlantsFailure } from '../actions/plants'
+import { getPlants, lessPlants, getPlantsSuccess, getPlantsFailure, getMorePlantsSuccess, getMorePlantsFailure } from '../actions/plants'
+import { setOtherUser } from '../actions/user'
 
 class Plants extends Component {
 
 
-  nextPlants = (token, uri) => {
+
+  nextPlantsS = (token, uri) => {
     const { dispatch } = this.props
+    console.log("Dispatching getPlants")
+    dispatch(getPlants(dispatch, token, uri))
+  }
+
+  nextPlants = (token, uri_end) => {
+    const { dispatch } = this.props
+    var uri_end = uri_end
+    var uri = 'http://34.221.120.52' + uri_end
+    console.log("Trying to DEBUG this get request for the next set of plants!!!", token, ", ", uri)
+    return axios({
+      method: 'GET',
+      url: uri,
+      headers: {Authorization: `Bearer ${token}`}
+      })
+      .then((response) => {
+        dispatch(getMorePlantsSuccess(response.data))
+        console.log('GETTING MORE PLANTS')
+      })
+      .catch(error => {
+        console.log('ERROR --- ERROR --- ERROR', error)
+         dispatch(getMorePlantsFailure(error.response.data)) && console.log(error.response.data.error)
+      })
     console.log("Dispatching getPlants")
     dispatch(getPlants(dispatch, token, uri))
   }
@@ -28,6 +53,12 @@ class Plants extends Component {
   showState = () => {
     console.log(this.props.state.plants)
   }
+
+
+toOtherUserProfile = (id) => {
+  const { dispatch, navigation } = this.props
+  dispatch(setOtherUser(id)) && navigation.navigate('Profile');
+}
 
   async componentDidMount() {
     const { dispatch, token } = this.props
@@ -65,7 +96,11 @@ class Plants extends Component {
             {plant_items.map((plant_item, index) => (
               <View key = {plant_item.id + 1897877777} style = {styles.container}>
                 <Text style = {styles.myGreenText}>{plant_item.name}</Text>
-                <Text style = {styles.text}>Grown by {plant_item.grower}</Text>
+                <Text style = {styles.text}>
+                  <AlteredTextButton onPress={() => this.toOtherUserProfile(plant_item.grower_id)}>
+                    Grown by {plant_item.grower}
+                  </AlteredTextButton>
+                </Text>
                 <Text style = {styles.text}>
                   Planted <Moment element={Text} fromNow>{plant_item.timestamp}</Moment>
                 </Text>
