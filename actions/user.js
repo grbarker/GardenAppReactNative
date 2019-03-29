@@ -24,6 +24,19 @@ export function getUser(token) {
   };
 }
 
+export function setCurrentUser() {
+  return {
+    type: SET_CURRENT_USER,
+  }
+}
+
+export function setOtherUser(id) {
+  return {
+    type: SET_OTHER_USER,
+    payload: id
+  }
+}
+
 export function getUserSuccess(data) {
   return {
     type: FETCH_USER_SUCCESS,
@@ -50,17 +63,4 @@ export function getOtherUserFailure(data) {
     type: FETCH_OTHER_USER_FAILURE,
     payload: data.error
   };
-}
-
-export function setCurrentUser() {
-  return {
-    type: SET_CURRENT_USER,
-  }
-}
-
-export function setOtherUser(id) {
-  return {
-    type: SET_OTHER_USER,
-    payload: id
-  }
 }
