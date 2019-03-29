@@ -239,10 +239,10 @@ class Profile extends Component {
       // console.log("Showing Followers?", showingFollowers)
       // console.log("Showing Followed?", showingFollowed)
       //console.log('Followers', followers, length)
-      fetched_user && console.log('----CURRENT-USER----CURRENT-USER----', user)
-      console.log('LOGGING FETCHED CURRENT USER----CURRENT USER----CURRENT USER-------------', fetched_user)
-      console.log('LOGGING FETCHED OTHER USER----OTHER USER----OTHER USER----------', otherFetched)
-      otherFetched && console.log('OTHER USER----OTHER USER    ', otherUser)
+      //fetched_user && console.log('----CURRENT-USER----CURRENT-USER----', user)
+      //console.log('LOGGING FETCHED CURRENT USER----CURRENT USER----CURRENT USER-------------', fetched_user)
+      //console.log('LOGGING FETCHED OTHER USER----OTHER USER----OTHER USER----------', otherFetched)
+      //otherFetched && console.log('OTHER USER----OTHER USER    ', otherUser)
       let imageSrc = (otherUserBool == true) ? otherUser._links['avatar'] : user._links['avatar'];
       let selectedUser = (otherUserBool == true) ? otherUser: user;
       //let imgSrc = user._links['avatar'];
