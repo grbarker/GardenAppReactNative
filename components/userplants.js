@@ -22,10 +22,26 @@ import { setOtherUser } from '../actions/user'
 class UserPlants extends Component {
 
 
-  nextUserPlants = (token, uri) => {
-    const { dispatch } = this.props
+  nextUserPlants = (token, uri_end) => {
+    const { dispatch, showCurrentUser } = this.props
+    let uri = `http://34.221.120.52` + uri_end
     console.log("Dispatching getUserPlants")
-    dispatch(getUserPlants(dispatch, token, uri))
+    return axios({
+      method: 'GET',
+      url: uri,
+      headers: {Authorization: `Bearer ${token}`}
+    })
+    .then((response) => {
+      showCurrentUser
+      ? (dispatch(getMoreUserPlantsSuccess(response.data)) && console.log('GET MORE USER PLANT SUCCESS ---- ', response.data))
+      : (dispatch(getMoreOtherUserPlantsSuccess(response.data)) && console.log('GET MORE OTHER USER PLANT SUCCESS ---- ', response.data))
+    })
+    .catch(error => {
+      console.log('ERROR --- ERROR --- ERROR', error)
+      showCurrentUser
+      ? dispatch(getMoreUserPlantsFailure(error.response))
+      : dispatch(getMoreOtherUserPlantsFailure(error))
+    })
   }
 
   lessUserPlants = () => {
@@ -96,7 +112,7 @@ class UserPlants extends Component {
     const {
       links, userplant_items, fetching, fetched_userplants, token, error,
       state, page, showCurrentUser, fetchedOtherUserPlants, otherUserPlantsItems,
-      otherUserPlantLinks, pageOtherUserPlants, errorOtherUserPlants,
+      otherUserPlantsLinks, pageOtherUserPlants, errorOtherUserPlants,
       otherUserID
     } = this.props
     //TRYING TO SET UP A 'NEXT' Button
@@ -109,10 +125,11 @@ class UserPlants extends Component {
       //console.log(page);
       console.log('OTHER USER PLANTS FETCHED ???? <><><><><> ', fetchedOtherUserPlants)
       let urii = (showCurrentUser) ? '/api/user/plants' : `/api/user/${otherUserID}/plants`
-      let uri = '/api/user/plants'
+      let linkss = (showCurrentUser) ? links : otherUserPlantsLinks;
+      //let uri = '/api/user/plants'
       //console.log("Here are the links!.....", links.next)
-      if (links.next) {
-        uri = links.next;
+      if (linkss.next) {
+        uri = linkss.next;
       }
       let items = (showCurrentUser) ? userplant_items : otherUserPlantsItems;
       //console.log(state)
@@ -124,7 +141,7 @@ class UserPlants extends Component {
           </View>
           <View>
             {items.map((item, index) => (
-              <View key = {item.id} style = {styles.container}>
+              <View key = {item.timestamp} style = {styles.container}>
                 <Text style = {styles.text}>{item.grower} planted {item.name}:  </Text>
                 <Text style = {styles.text}>
                   <Moment element={Text} fromNow>{item.timestamp}</Moment>
@@ -133,7 +150,7 @@ class UserPlants extends Component {
             ))}
           </View>
           <View style={styles.moreLessButtonsContainer}>
-            {(links.prev) ?
+            {(linkss.prev) ?
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
@@ -149,7 +166,7 @@ class UserPlants extends Component {
                   Less Plants
                 </AlteredTextButton>
             }
-            {(links.next) ?
+            {(linkss.next) ?
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
