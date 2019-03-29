@@ -13,6 +13,11 @@ import {
   getUserPlants, lessUserPlants, getUserPlantsSuccess, getUserPlantsFailure,
   getMoreUserPlantsSuccess, getMoreUserPlantsFailure
 } from '../actions/userplants'
+import {
+  getOtherUserPlants, lessOtherUserPlants, getOtherUserPlantsSuccess, getOtherUserPlantsFailure,
+  getMoreOtherUserPlantsSuccess, getMoreOtherUserPlantsFailure
+} from '../actions/otherUserPlants'
+import { setOtherUser } from '../actions/user'
 
 class UserPlants extends Component {
 
@@ -36,11 +41,34 @@ class UserPlants extends Component {
   showState = () => {
     console.log(this.props.state.userplants)
   }
+  fetchUserPlants = () => {
+    const { dispatch, token, showCurrentUser, otherUserBool, otherUserID } = this.props
+    let uri = (showCurrentUser) ? `http://34.221.120.52/api/user/plants` : `http://34.221.120.52/api/user/${otherUserID}/plants`
+
+    return axios({
+      method: 'GET',
+      url: uri,
+      headers: {Authorization: `Bearer ${token}`}
+    })
+    .then((response) => {
+      showCurrentUser
+      ? (dispatch(getUserPlantsSuccess(response.data)) && console.log('GET USER PLANT SUCCESS ---- ', response.data))
+      : (dispatch(getOtherUserPlantsSuccess(response.data)) && console.log('GET OTHER USER PLANT SUCCESS ---- ', response.data))
+    })
+    .catch(error => {
+      console.log('ERROR --- ERROR --- ERROR', error)
+      showCurrentUser
+      ? dispatch(getUserPlantsFailure(error.response))
+      : dispatch(getOtherUserPlantsFailure(error))
+    })
+
+  }
 
   async componentDidMount() {
-    const { dispatch, token, page } = this.props
+    const { dispatch, token, page, showCurrentUser, otherUserBool, otherUser } = this.props
     //console.log(page);
-    try {
+    this.fetchUserPlants()
+    /*try {
       let response = await fetch(
         `http://@34.221.120.52/api/user/plants`, {
           method: 'GET',
@@ -54,24 +82,39 @@ class UserPlants extends Component {
       dispatch(getUserPlantsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
-    }
+    }*/
+  }
+
+  toOtherUserProfile = (id) => {
+    const { dispatch, navigation } = this.props
+    dispatch(setOtherUser(id))
+    navigation.navigate('Profile');
   }
 
 
   render() {
-    const {  links, userplant_items, fetching, fetched_userplants, token, error, state, page } = this.props
+    const {
+      links, userplant_items, fetching, fetched_userplants, token, error,
+      state, page, showCurrentUser, fetchedOtherUserPlants, otherUserPlantsItems,
+      otherUserPlantLinks, pageOtherUserPlants, errorOtherUserPlants,
+      otherUserID
+    } = this.props
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE AlteredTextButton
     //AND THEN FIGURE OUT HOW TO dispatch getUsers
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of userplants.")
-    if (fetched_userplants == true) {
+    fetchedOtherUserPlants && console.log('OTHER USER PLANTS FETCHED SUCCESS<><><><><> ', otherUserPlantsItems)
+    if (fetched_userplants == true || fetchedOtherUserPlants == true) {
       //console.log(page);
+      console.log('OTHER USER PLANTS FETCHED ???? <><><><><> ', fetchedOtherUserPlants)
+      let urii = (showCurrentUser) ? '/api/user/plants' : `/api/user/${otherUserID}/plants`
       let uri = '/api/user/plants'
       //console.log("Here are the links!.....", links.next)
       if (links.next) {
         uri = links.next;
       }
+      let items = (showCurrentUser) ? userplant_items : otherUserPlantsItems;
       //console.log(state)
       //console.log("Trying to get the uri.....", uri)
       return (
@@ -80,11 +123,11 @@ class UserPlants extends Component {
             <Text style = {styles.scrollViewHeaderText}>Here are you're most recent plants</Text>
           </View>
           <View>
-            {userplant_items.map((userplant_item, index) => (
-              <View key = {userplant_item.id} style = {styles.container}>
-                <Text style = {styles.text}>{userplant_item.grower} planted {userplant_item.name}: </Text>
+            {items.map((item, index) => (
+              <View key = {item.id} style = {styles.container}>
+                <Text style = {styles.text}>{item.grower} planted {item.name}:  </Text>
                 <Text style = {styles.text}>
-                  <Moment element={Text} fromNow>{userplant_item.timestamp}</Moment>
+                  <Moment element={Text} fromNow>{item.timestamp}</Moment>
                 </Text>
               </View>
             ))}
@@ -148,9 +191,19 @@ const mapStateToProps = (state, ownProps) => {
       page: state.userplants.page,
       userplant_items: state.userplants.items,
       links: state.userplants.links,
-      token: state.auth.token,
       error: state.userplants.error,
-      state: state
+      fetchedOtherUserPlants: state.otherUserPlants.fetched,
+      pageOtherUserPlants: state.otherUserPlants.page,
+      otherUserPlantsItems: state.otherUserPlants.items,
+      otherUserPlantsLinks: state.otherUserPlants.links,
+      errorOtherUserPlants: state.otherUserPlants.error,
+      token: state.auth.token,
+      state: state,
+      showCurrentUser: state.user.showCurrentUser,
+      otherUserBool: state.user.otherUserBool,
+      otherUserID: state.user.otherUserID,
+      otherFetched: state.user.otherFetched,
+      otherUser: state.user.otherUser,
     };
 }
 
