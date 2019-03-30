@@ -6,8 +6,6 @@ export const FETCH_OTHER_USER_PLANTS_FAILURE = 'FETCH_OTHER_USER_PLANTS_FAILURE'
 export const FETCH_MORE_OTHER_USER_PLANTS_SUCCESS = 'FETCH_MORE_OTHER_USER_PLANTS_SUCCESS';
 export const FETCH_MORE_OTHER_USER_PLANTS_FAILURE = 'FETCH_MORE_OTHER_USER_PLANTS_FAILURE';
 export const LESS_OTHER_USER_PLANTS = 'LESS_OTHER_USER_PLANTS';
-export const SHOW_OTHER_PLANT_INPUT = 'SHOW_OTHER_PLANT_INPUT';
-export const HIDE_OTHER_PLANT_INPUT = 'HIDE_OTHER_PLANT_INPUT';
 
 const api = "http://34.221.120.52/api/user/"
 
@@ -34,18 +32,6 @@ export function getOtherUserPlants(dispatch, token, uri_end) {
 export function lessOtherUserPlants() {
   return {
     type: LESS_OTHER_USER_PLANTS,
-  };
-}
-
-export function showOtherPlantInput() {
-  return {
-    type: SHOW_OTHER_PLANT_INPUT,
-  };
-}
-
-export function hideOtherPlantInput() {
-  return {
-    type: HIDE_OTHER_PLANT_INPUT,
   };
 }
 
