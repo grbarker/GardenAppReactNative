@@ -13,20 +13,20 @@ import {
   getUserPosts, lessUserPosts, getUserPostsSuccess, getUserPostsFailure,
   getMoreUserPostsSuccess, getMoreUserPostsFailure
 } from '../actions/userposts'
+import {
+  getOtherUserPosts, lessOtherUserPosts, getOtherUserPostsSuccess, getOtherUserPostsFailure,
+  getMoreOtherUserPostsSuccess, getMoreOtherUserPostsFailure
+} from '../actions/otherUserPosts'
 
 class UserPosts extends Component {
 
 
-  nextUserPosts = (token, uri) => {
-    const { dispatch } = this.props
-    console.log("Dispatching getUsers")
-    dispatch(getUserPosts(dispatch, token, uri))
-  }
-
   lessUserPosts = () => {
-    const { dispatch } = this.props
-    console.log("Dispatching lessUserPosts")
-    dispatch(lessUserPosts())
+    const { dispatch, showCurrentUser, initNextLink, initSelfLink } = this.props
+    showCurrentUser
+    ? (dispatch(lessUserPosts(initNextLink, initSelfLink)) && console.log("Dispatching lessUserPosts"))
+    : (dispatch(lessOtherUserPosts(initNextLink, initSelfLink)) && console.log("Dispatching lessOtherUserPosts"))
+
   }
 
   inactiveButton = () => {
@@ -37,10 +37,56 @@ class UserPosts extends Component {
     console.log(this.props.state.userposts)
   }
 
+
+  nextUserPosts = (token, uri_end) => {
+    const { dispatch, showCurrentUser } = this.props
+    let url = `http://34.221.120.52` + uri_end
+    return axios({
+      method: 'GET',
+      url: url,
+      headers: {Authorization: `Bearer ${token}`}
+    })
+    .then((response) => {
+      showCurrentUser
+      ? (dispatch(getMoreUserPostsSuccess(response.data)) && console.log('GET MORE USER POST SUCCESS ---- ', Object.keys(response.data)))
+      : (dispatch(getMoreOtherUserPostsSuccess(response.data)) && console.log('GET MORE OTHER USER POST SUCCESS ---- ', Object.keys(response.data)))
+    })
+    .catch(error => {
+      console.log('ERROR --- ERROR --- ERROR', error)
+      showCurrentUser
+      ? dispatch(getMoreUserPostsFailure(error.response))
+      : dispatch(getMoreOtherUserPostsFailure(error))
+    })
+  }
+
+
+  fetchUserPosts = () => {
+    const { dispatch, token, showCurrentUser, otherUserBool, otherUserID } = this.props
+    let uri = (showCurrentUser) ? `http://34.221.120.52/api/user/posts` : `http://34.221.120.52/api/user/${otherUserID}/posts`
+
+    return axios({
+      method: 'GET',
+      url: uri,
+      headers: {Authorization: `Bearer ${token}`}
+    })
+    .then((response) => {
+      showCurrentUser
+      ? (dispatch(getUserPostsSuccess(response.data)) && console.log('GET USER POST SUCCESS ---- ', Object.keys(response.data)))
+      : (dispatch(getOtherUserPostsSuccess(response.data)) && console.log('GET OTHER USER POST SUCCESS ---- ', Object.keys(response.data)))
+    })
+    .catch(error => {
+      console.log('ERROR --- ERROR --- ERROR', error)
+      showCurrentUser
+      ? dispatch(getUserPostsFailure(error.response))
+      : dispatch(getOtherUserPostsFailure(error))
+    })
+  }
+
   async componentDidMount() {
     const { dispatch, token, page } = this.props
     //console.log(page);
-    try {
+    this.fetchUserPosts()
+    /*try {
       let response = await fetch(
         `http://@34.221.120.52/api/user/posts`, {
           method: 'GET',
@@ -54,24 +100,34 @@ class UserPosts extends Component {
       dispatch(getUserPostsSuccess(responseJSON))
     } catch (error) {
       console.error(error);
-    }
+    }*/
   }
 
 
   render() {
-    const {  links, userpost_items, fetching, fetched_userposts, token, error, state, page } = this.props
+    const {
+      currentUserLinks, userpost_items, fetching, fetched_userposts, token, error,
+      state, page, showCurrentUser, fetchedOtherUserPosts, otherUserPostsItems,
+      otherUserPostsLinks, pageOtherUserPosts, errorOtherUserPosts,
+      otherUserID
+    } = this.props
     //TRYING TO SET UP A 'NEXT' Button
     //TRYING TO PASS THE 'NEXT' LINK DOWN TO THE AlteredTextButton
     //AND THEN FIGURE OUT HOW TO dispatch getUsers
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of userposts.")
-    if (fetched_userposts == true) {
+    if (fetched_userposts == true || fetchedOtherUserPosts == true) {
       //console.log(page);
-      let uri = '/api/user/posts'
+      //console.log('OTHER USER POSTS FETCHED ???? <><><><><> ', fetchedOtherUserPosts,)
+      let urii = (showCurrentUser) ? '/api/user/posts' : `/api/user/${otherUserID}/posts`
+      let linksss = (showCurrentUser) ? currentUserLinks : otherUserPostsLinks;
+      //let uri = '/api/user/posts'
       //console.log("Here are the links!.....", links.next)
-      if (links.next) {
-        uri = links.next;
+      if (linksss.next) {
+        uurrii = linksss.next;
       }
+      //console.log('USER POST LINKS', otherUserPostsLinks)
+      let items = (showCurrentUser) ? userpost_items : otherUserPostsItems;
       //console.log(state)
       //console.log("Trying to get the uri.....", uri)
       return (
@@ -80,15 +136,15 @@ class UserPosts extends Component {
             <Text style = {styles.scrollViewHeaderText}>Here are you're most recent posts</Text>
           </View>
           <View>
-            {userpost_items.map((userpost_item, index) => (
-              <View key = {userpost_item.id} style = {styles.container}>
-                <Text style = {styles.myGreenText}>{userpost_item.user}: </Text>
-                <Text style = {styles.text}>{userpost_item.body}</Text>
+            {items.map((item, index) => (
+              <View key = {item.id} style = {styles.container}>
+                <Text style = {styles.myGreenText}>{item.user}: </Text>
+                <Text style = {styles.text}>{item.body}</Text>
               </View>
             ))}
           </View>
           <View style={styles.moreLessButtonsContainer}>
-            {(links.prev) ?
+            {(linksss.prev) ?
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
@@ -103,11 +159,11 @@ class UserPosts extends Component {
                   Less Posts
                 </AlteredTextButton>
             }
-            {(links.next) ?
+            {(linksss.next) ?
               <AlteredTextButton
                 style={styles.filledTextButton}
                 textStyle={styles.whiteText}
-                onPress={e => this.nextUserPosts(token, uri)}
+                onPress={e => this.nextUserPosts(token, linksss.next)}
               >
                 More Posts
                 </AlteredTextButton>
@@ -144,10 +200,22 @@ const mapStateToProps = (state, ownProps) => {
       fetched_userposts: state.userposts.fetched,
       page: state.userposts.page,
       userpost_items: state.userposts.items,
-      links: state.userposts.links,
-      token: state.auth.token,
+      currentUserLinks: state.userposts.links,
       error: state.userposts.error,
-      state: state
+      fetchedOtherUserPosts: state.otherUserPosts.fetched,
+      pageOtherUserPosts: state.otherUserPosts.page,
+      otherUserPostsItems: state.otherUserPosts.items,
+      otherUserPostsLinks: state.otherUserPosts.links,
+      errorOtherUserPosts: state.otherUserPosts.error,
+      token: state.auth.token,
+      state: state,
+      initNextLink: state.otherUserPosts.initNextLink,
+      initSelfLink: state.otherUserPosts.initSelfLink,
+      showCurrentUser: state.user.showCurrentUser,
+      otherUserBool: state.user.otherUserBool,
+      otherUserID: state.user.otherUserID,
+      otherFetched: state.user.otherFetched,
+      otherUser: state.user.otherUser,
     };
 }
 
