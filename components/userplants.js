@@ -33,8 +33,8 @@ class UserPlants extends Component {
     })
     .then((response) => {
       showCurrentUser
-      ? (dispatch(getMoreUserPlantsSuccess(response.data)) && console.log('GET MORE USER PLANT SUCCESS ---- ', response.data))
-      : (dispatch(getMoreOtherUserPlantsSuccess(response.data)) && console.log('GET MORE OTHER USER PLANT SUCCESS ---- ', response.data))
+      ? (dispatch(getMoreUserPlantsSuccess(response.data)) && console.log('GET MORE USER PLANT SUCCESS ---- ', Object.keys(response.data)))
+      : (dispatch(getMoreOtherUserPlantsSuccess(response.data)) && console.log('GET MORE OTHER USER PLANT SUCCESS ---- ', Object.keys(response.data)))
     })
     .catch(error => {
       console.log('ERROR --- ERROR --- ERROR', error)
@@ -45,9 +45,11 @@ class UserPlants extends Component {
   }
 
   lessUserPlants = () => {
-    const { dispatch } = this.props
-    console.log("Dispatching lessUserPlants")
-    dispatch(lessUserPlants())
+    const { dispatch, showCurrentUser, initNextLink, initSelfLink } = this.props
+    showCurrentUser
+    ? (dispatch(lessUserPlants(initNextLink, initSelfLink)) && console.log("Dispatching lessUserPlants"))
+    : (dispatch(lessOtherUserPlants(initNextLink, initSelfLink)) && console.log("Dispatching lessOtherUserPlants"))
+
   }
 
   inactiveButton = () => {
@@ -57,6 +59,7 @@ class UserPlants extends Component {
   showState = () => {
     console.log(this.props.state.userplants)
   }
+
   fetchUserPlants = () => {
     const { dispatch, token, showCurrentUser, otherUserBool, otherUserID } = this.props
     let uri = (showCurrentUser) ? `http://34.221.120.52/api/user/plants` : `http://34.221.120.52/api/user/${otherUserID}/plants`
@@ -68,8 +71,8 @@ class UserPlants extends Component {
     })
     .then((response) => {
       showCurrentUser
-      ? (dispatch(getUserPlantsSuccess(response.data)) && console.log('GET USER PLANT SUCCESS ---- ', response.data))
-      : (dispatch(getOtherUserPlantsSuccess(response.data)) && console.log('GET OTHER USER PLANT SUCCESS ---- ', response.data))
+      ? (dispatch(getUserPlantsSuccess(response.data)) && console.log('GET USER PLANT SUCCESS ---- ', Object.keys(response.data)))
+      : (dispatch(getOtherUserPlantsSuccess(response.data)) && console.log('GET OTHER USER PLANT SUCCESS ---- ', Object.keys(response.data)))
     })
     .catch(error => {
       console.log('ERROR --- ERROR --- ERROR', error)
@@ -77,7 +80,6 @@ class UserPlants extends Component {
       ? dispatch(getUserPlantsFailure(error.response))
       : dispatch(getOtherUserPlantsFailure(error))
     })
-
   }
 
   async componentDidMount() {
@@ -120,10 +122,10 @@ class UserPlants extends Component {
     //AND THEN FIGURE OUT HOW TO dispatch getUsers
     //console.log("Here's the token!.....", token)
     //console.log("Fetching the next set of userplants.")
-    fetchedOtherUserPlants && console.log('OTHER USER PLANTS FETCHED SUCCESS<><><><><> ', otherUserPlantsItems)
+    //fetchedOtherUserPlants && console.log('OTHER USER PLANTS FETCHED SUCCESS<><><><><> ', otherUserPlantsItems)
     if (fetched_userplants == true || fetchedOtherUserPlants == true) {
       //console.log(page);
-      console.log('OTHER USER PLANTS FETCHED ???? <><><><><> ', fetchedOtherUserPlants)
+      //console.log('OTHER USER PLANTS FETCHED ???? <><><><><> ', fetchedOtherUserPlants)
       let urii = (showCurrentUser) ? '/api/user/plants' : `/api/user/${otherUserID}/plants`
       let linkss = (showCurrentUser) ? links : otherUserPlantsLinks;
       //let uri = '/api/user/plants'
