@@ -1,7 +1,7 @@
 import {
   FETCH_OTHER_USER_PLANTS, LESS_OTHER_USER_PLANTS, FETCH_OTHER_USER_PLANTS_SUCCESS,
   FETCH_OTHER_USER_PLANTS_FAILURE, FETCH_MORE_OTHER_USER_PLANTS_SUCCESS,
-  FETCH_MORE_OTHER_USER_PLANTS_FAILURE, SHOW_OTHER_PLANT_INPUT, HIDE_OTHER_PLANT_INPUT
+  FETCH_MORE_OTHER_USER_PLANTS_FAILURE
 } from '../actions/otherUserPlants'
 
 const INITIAL_STATE = {
@@ -9,9 +9,11 @@ const INITIAL_STATE = {
   fetched: false,
   page: null,
   links: {},
+  initNextLink: null,
+  initSelfLink: null,
   items: [],
   error: null,
-  showingPlantInput: false
+  showingPostInput: false
 }
 export default function otherUserPlants(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -28,6 +30,8 @@ export default function otherUserPlants(state = INITIAL_STATE, action) {
         fetched: true,
         page: action.payload._meta.page,
         links: action.payload._links,
+        initNextLink: action.payload._links.next,
+        initSelfLink: action.payload._links.self,
         items: action.payload.items,
         error: null
       };
@@ -57,21 +61,11 @@ export default function otherUserPlants(state = INITIAL_STATE, action) {
       return {
         ...state,
         links: {
-          next: "/api/user/plants?per_page=10&page=2",
+          next: state.initNextLink,
           prev: null,
-          self: "/api/user/plants?per_page=10&page=1",
+          self: state.initSelfLink,
         },
         items: state.items.splice(0, 10)
-      };
-    case SHOW_OTHER_PLANT_INPUT:
-      return {
-        ...state,
-        showingPlantInput: true
-      };
-    case HIDE_OTHER_PLANT_INPUT:
-      return {
-        ...state,
-        showingPlantInput: false
       };
     default :
       return state
